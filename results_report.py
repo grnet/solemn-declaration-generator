@@ -1,14 +1,18 @@
 import json
 
+from textwrap import wrap
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.platypus import Spacer, Image
+from reportlab.platypus import PageBreak
 from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER, TA_RIGHT
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase.pdfmetrics import stringWidth
+
 
 PAGE_WIDTH, PAGE_HEIGHT = A4
 
@@ -22,32 +26,293 @@ pdfmetrics.registerFont(TTFont(
 info = {}
 
 
-def load_results(declaration_id):
-    info['to'] = 'doi'
-    info['name'] = 'name'
-    info['surname'] = 'surname'
-    info['father_name'] = 'father name'
-    info['mother_name'] = 'mother name'
-    info['date_of_birth'] = 'date-of-birth'
-    info['birth_place'] = 'Birthplace'
-    info['id_number'] = 'ID #'
-    info['tax_id'] = 'TAX ID'
-    info['place_of_residence'] = 'Athens'
-    info['street'] = 'Street'
-    info['street_number'] = 'St. #'
-    info['postal_code'] = 'PC'
-    info['email'] = 'mariosmenexes@gmail.com'
-    info['telephone'] = '69XXXXXXXX'
+def load_results(filename):
+    with open(filename, 'r') as jsonfile:
+        jsondata = json.load(jsonfile)
+        for result in jsondata:
+            info[result] = jsondata[result]
     return info
 
 
 def make_first_page_hf(canvas, doc):
     canvas.saveState()
+    textobject = canvas.beginText()
     canvas.drawImage('logo.jpg',
                      x=PAGE_WIDTH - 12 * cm,
-                     y=PAGE_HEIGHT - 3 * cm,
+                     y=PAGE_HEIGHT - 2.7 * cm,
                      width=PAGE_WIDTH / 8,
                      height=2.5 * cm)
+    # subtitle
+    canvas.roundRect(2 * cm, PAGE_HEIGHT - 6.1 * cm, 17 *
+                     cm, 1.5 * cm, 4, stroke=1, fill=0)
+    # PROS Box
+    canvas.roundRect(2 * cm, PAGE_HEIGHT - 7.85 * cm, 2.5 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(2.4 * cm, PAGE_HEIGHT - 7.80 *
+                             cm)
+    # Set font face and size
+    textobject.setFont('Roboto-Bold', 9)
+    textobject.textLine(text='Προς:')
+    canvas.drawText(textobject)
+    # PROS Value
+    canvas.roundRect(4.5 * cm, PAGE_HEIGHT - 7.85 * cm, 14.5 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(4.8 * cm, PAGE_HEIGHT - 7.80 *
+                             cm)
+    textobject.setFont('Roboto-Regular', 10)
+    textobject.textLine(text=info['to'])
+    canvas.drawText(textobject)
+    # ONOMA Box
+    canvas.roundRect(2 * cm, PAGE_HEIGHT - 8.85 * cm, 2.5 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(2.1 * cm, PAGE_HEIGHT - 8.79 *
+                             cm)
+    textobject.setFont('Roboto-Bold', 9)
+    textobject.textLine(text='Ο - Η Όνομα:')
+    canvas.drawText(textobject)
+    # ONOMA Value
+    canvas.roundRect(4.5 * cm, PAGE_HEIGHT - 8.85 * cm, 6 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(4.8 * cm, PAGE_HEIGHT - 8.80 *
+                             cm)
+    textobject.setFont('Roboto-Regular', 10)
+    textobject.textLine(text=info['name'])
+    canvas.drawText(textobject)
+    # EPWNIMO Box
+    canvas.roundRect(10.5 * cm, PAGE_HEIGHT - 8.85 * cm, 2.5 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(11 * cm, PAGE_HEIGHT - 8.79 *
+                             cm)
+    textobject.setFont('Roboto-Bold', 9)
+    textobject.textLine(text='Επώνυμο:')
+    canvas.drawText(textobject)
+    # EPWNIMO Value
+    canvas.roundRect(13 * cm, PAGE_HEIGHT - 8.85 * cm, 6 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(13.5 * cm, PAGE_HEIGHT - 8.80 *
+                             cm)
+    textobject.setFont('Roboto-Regular', 10)
+    textobject.textLine(text=info['surname'])
+    canvas.drawText(textobject)
+    # ONOMA PATERA Box
+    canvas.roundRect(2 * cm, PAGE_HEIGHT - 9.85 * cm, 4.5 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(2.1 * cm, PAGE_HEIGHT - 9.80 *
+                             cm)
+    textobject.setFont('Roboto-Bold', 9)
+    textobject.textLine(text='Όνομα και Επώνυμο Πατέρα:')
+    canvas.drawText(textobject)
+    # ONOMA PATERA Value
+    canvas.roundRect(6.5 * cm, PAGE_HEIGHT - 9.85 * cm, 12.5 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(7 * cm, PAGE_HEIGHT - 9.80 *
+                             cm)
+    textobject.setFont('Roboto-Regular', 10)
+    textobject.textLine(text=info['father_name'])
+    canvas.drawText(textobject)
+    # ONOMA MITERA Box
+    canvas.roundRect(2 * cm, PAGE_HEIGHT - 10.85 * cm, 4.5 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(2.05 * cm, PAGE_HEIGHT - 10.80 *
+                             cm)
+    textobject.setFont('Roboto-Bold', 9)
+    textobject.textLine(text='Όνομα και Επώνυμο Μητέρας:')
+    canvas.drawText(textobject)
+    # ONOMA MITERA Value
+    canvas.roundRect(6.5 * cm, PAGE_HEIGHT - 10.85 * cm, 12.5 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(7 * cm, PAGE_HEIGHT - 10.80 *
+                             cm)
+    textobject.setFont('Roboto-Regular', 10)
+    textobject.textLine(text=info['mother_name'])
+    canvas.drawText(textobject)
+    # HM GENNISIS Box
+    canvas.roundRect(2 * cm, PAGE_HEIGHT - 11.85 * cm, 4.5 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(2.1 * cm, PAGE_HEIGHT - 11.80 *
+                             cm)
+    textobject.setFont('Roboto-Bold', 9)
+    textobject.textLine(text='Ημερομηνία Γέννησης:')
+    canvas.drawText(textobject)
+    # HM GENNISIS Value
+    canvas.roundRect(6.5 * cm, PAGE_HEIGHT - 11.85 * cm, 12.5 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(7 * cm, PAGE_HEIGHT - 11.80 *
+                             cm)
+    textobject.setFont('Roboto-Regular', 10)
+    textobject.textLine(text=info['date_of_birth'])
+    canvas.drawText(textobject)
+    # TOPOS GENNISIS Box
+    canvas.roundRect(2 * cm, PAGE_HEIGHT - 12.85 * cm, 4.5 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(2.1 * cm, PAGE_HEIGHT - 12.80 *
+                             cm)
+    textobject.setFont('Roboto-Bold', 9)
+    textobject.textLine(text='Τόπος Γέννησης:')
+    canvas.drawText(textobject)
+    # TOPOS GENNISIS Value
+    canvas.roundRect(6.5 * cm, PAGE_HEIGHT - 12.85 * cm, 12.5 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(7 * cm, PAGE_HEIGHT - 12.80 *
+                             cm)
+    textobject.setFont('Roboto-Regular', 10)
+    textobject.textLine(text=info['birth_place'])
+    canvas.drawText(textobject)
+    # ID Box
+    canvas.roundRect(2 * cm, PAGE_HEIGHT - 13.85 * cm, 4.5 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(2.05 * cm, PAGE_HEIGHT - 13.80 *
+                             cm)
+    textobject.setFont('Roboto-Bold', 9)
+    textobject.textLine(text='Αριθμός Δελτίου Ταυτότητας:')
+    canvas.drawText(textobject)
+    # ID Value
+    canvas.roundRect(6.5 * cm, PAGE_HEIGHT - 13.85 * cm, 4.5 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(7 * cm, PAGE_HEIGHT - 13.80 *
+                             cm)
+    textobject.setFont('Roboto-Regular', 10)
+    textobject.textLine(text=info['id_number'])
+    canvas.drawText(textobject)
+    # TIL Box
+    canvas.roundRect(11 * cm, PAGE_HEIGHT - 13.85 * cm, 1.5 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(11.3 * cm, PAGE_HEIGHT - 13.80 *
+                             cm)
+    textobject.setFont('Roboto-Bold', 9)
+    textobject.textLine(text='Τηλ:')
+    canvas.drawText(textobject)
+    # TIL Value
+    canvas.roundRect(12.5 * cm, PAGE_HEIGHT - 13.85 * cm, 6.5 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(13 * cm, PAGE_HEIGHT - 13.80 *
+                             cm)
+    textobject.setFont('Roboto-Regular', 10)
+    textobject.textLine(text=info['telephone'])
+    canvas.drawText(textobject)
+    # TOPOS KATOIKIAS Box
+    canvas.roundRect(2 * cm, PAGE_HEIGHT - 14.85 * cm, 3 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(2.1 * cm, PAGE_HEIGHT - 14.80 *
+                             cm)
+    textobject.setFont('Roboto-Bold', 9)
+    textobject.textLine(text='Τόπος Κατοικίας:')
+    canvas.drawText(textobject)
+    # TOPOS KATOIKIAS Value
+    canvas.roundRect(5 * cm, PAGE_HEIGHT - 14.85 * cm, 3.5 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(5.5 * cm, PAGE_HEIGHT - 14.80 *
+                             cm)
+    textobject.setFont('Roboto-Regular', 10)
+    textobject.textLine(text=info['place_of_residence'])
+    canvas.drawText(textobject)
+    # ODOS Box
+    canvas.roundRect(8.5 * cm, PAGE_HEIGHT - 14.85 * cm, 1.7 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(8.8 * cm, PAGE_HEIGHT - 14.80 *
+                             cm)
+    textobject.setFont('Roboto-Bold', 9)
+    textobject.textLine(text='Οδός:')
+    canvas.drawText(textobject)
+    # ODOS Value
+    canvas.roundRect(10.2 * cm, PAGE_HEIGHT - 14.85 * cm, 3.1 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(10.7 * cm, PAGE_HEIGHT - 14.80 *
+                             cm)
+    textobject.setFont('Roboto-Regular', 10)
+    textobject.textLine(text=info['street'])
+    canvas.drawText(textobject)
+    # Arithmos Box
+    canvas.roundRect(13.3 * cm, PAGE_HEIGHT - 14.85 * cm, 1.5 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(13.6 * cm, PAGE_HEIGHT - 14.80 *
+                             cm)
+    textobject.setFont('Roboto-Bold', 9)
+    textobject.textLine(text='Αριθ:')
+    canvas.drawText(textobject)
+    # Arithmos Value
+    canvas.roundRect(14.8 * cm, PAGE_HEIGHT - 14.85 * cm, 1.1 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(15.3 * cm, PAGE_HEIGHT - 14.80 *
+                             cm)
+    textobject.setFont('Roboto-Regular', 10)
+    textobject.textLine(text=info['street_number'])
+    canvas.drawText(textobject)
+    # ΤΚ Box
+    canvas.roundRect(15.9 * cm, PAGE_HEIGHT - 14.85 * cm, 1.1 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(16.2 * cm, PAGE_HEIGHT - 14.80 *
+                             cm)
+    textobject.setFont('Roboto-Bold', 9)
+    textobject.textLine(text='Τ.Κ:')
+    canvas.drawText(textobject)
+    # ΤΚ Value
+    canvas.roundRect(17 * cm, PAGE_HEIGHT - 14.85 * cm, 2 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(17.5 * cm, PAGE_HEIGHT - 14.80 *
+                             cm)
+    textobject.setFont('Roboto-Regular', 10)
+    textobject.textLine(text=info['postal_code'])
+    canvas.drawText(textobject)
+    # AFM Box
+    canvas.roundRect(2 * cm, PAGE_HEIGHT - 15.85 * cm, 4.5 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(3.5 * cm, PAGE_HEIGHT - 15.80 *
+                             cm)
+    textobject.setFont('Roboto-Bold', 9)
+    textobject.textLine(text='Α.Φ.Μ:')
+    canvas.drawText(textobject)
+    # AFM Value
+    canvas.roundRect(6.5 * cm, PAGE_HEIGHT - 15.85 * cm, 4 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(7 * cm, PAGE_HEIGHT - 15.80 *
+                             cm)
+    textobject.setFont('Roboto-Regular', 10)
+    textobject.textLine(text=info['tax_id'])
+    canvas.drawText(textobject)
+    # EMAIL Box
+    canvas.roundRect(10.5 * cm, PAGE_HEIGHT - 15.85 * cm, 2.5 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(11.3 * cm, PAGE_HEIGHT - 15.80 *
+                             cm)
+    textobject.setFont('Roboto-Bold', 9)
+    textobject.textLine(text='E-mail:')
+    canvas.drawText(textobject)
+    # EMAIL Value
+    canvas.roundRect(13 * cm, PAGE_HEIGHT - 15.85 * cm, 6 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(13.5 * cm, PAGE_HEIGHT - 15.80 *
+                             cm)
+    textobject.setFont('Roboto-Regular', 10)
+    textobject.textLine(text=info['email'])
+    canvas.drawText(textobject)
+    # RESPONSIBILITY TEXT
+    canvas.roundRect(2 * cm, PAGE_HEIGHT - 18 * cm, 17 *
+                     cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(2.15 * cm, PAGE_HEIGHT - 17.4 *
+                             cm)
+    textobject.setFont('Roboto-Regular', 9)
+    wrap_text = "\n".join(wrap(responsibility_text, 110))
+    textobject.textLines(wrap_text)
+    canvas.drawText(textobject)
+    # DECLARATION TEXT
+    canvas.roundRect(2 * cm, PAGE_HEIGHT - 24 * cm, 17 *
+                     cm, 5 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(2.2 * cm, PAGE_HEIGHT - 19.5 *
+                             cm)
+    textobject.setFont('Roboto-Bold', 9)
+    wrap_text = "\n".join(wrap(info['declaration_text'], 120))
+    textobject.textLines(wrap_text)
+    canvas.drawText(textobject)
+    # AKNOWLEDGMENT TEXT
+    canvas.roundRect(2 * cm, PAGE_HEIGHT - 27.2 * cm, 17 *
+                     cm, 2.2 * cm, 2, stroke=1, fill=0)
+    textobject.setTextOrigin(2.1 * cm, PAGE_HEIGHT - 25.5 *
+                             cm)
+    textobject.setFont('Roboto-Regular', 9)
+    wrap_text = "\n".join(wrap(aknowledgment_text, 100))
+    textobject.textLines(wrap_text)
+    canvas.drawText(textobject)
     canvas.restoreState()
 
 
@@ -60,76 +325,16 @@ def make_later_pages_hf(canvas, doc):
 
 
 def make_heading(element, contents):
-    for x in range(0, 2):
-        elements.append(Spacer(1, 12))
     for pcontent in contents:
         elements.append(Paragraph(pcontent, styles["DilosiHeading"]))
 
 
 def make_intro(elements, contents):
-    elements.append(Paragraph(contents, styles["Dilosi"]))
     elements.append(Spacer(1, 12))
+    elements.append(Paragraph(contents, styles["Dilosi"]))
 
 
-def make_totals(elements, info):
-    fields = [
-        [Paragraph('Πρός: ', styles['DilosiBold']),
-         Paragraph(info['to'], styles['Dilosi'])],
-        [Spacer(1, 5), Spacer(1, 5)],
-        [Paragraph('Όνομα: ', styles['DilosiBold']),
-         Paragraph(info['name'], styles['Dilosi'])],
-        [Spacer(1, 5), Spacer(1, 5)],
-        [Paragraph('Επώνυμο: ', styles['DilosiBold']), Paragraph(
-            info['surname'], styles['Dilosi'])],
-        [Spacer(1, 5), Spacer(1, 5)],
-        [Paragraph('Όνομα και Επώνυμο Πατέρα:',  styles['DilosiBold']),
-         Paragraph(info['father_name'], styles['Dilosi'])],
-        [Spacer(1, 5), Spacer(1, 5)],
-        [Paragraph('Όνομα και Επώνυμο Μητέρας: ', styles['DilosiBold']),
-         Paragraph(info['mother_name'], styles['Dilosi'])],
-        [Spacer(1, 5), Spacer(1, 5)],
-        [Paragraph('Ημερομηνία Γέννησης: ', styles['DilosiBold']),
-         Paragraph(info['date_of_birth'], styles['Dilosi'])],
-        [Spacer(1, 5), Spacer(1, 5)],
-        [Paragraph('Τόπος Γέννησης: ', styles['DilosiBold']),
-         Paragraph(info['birth_place'], styles['Dilosi'])],
-        [Spacer(1, 5), Spacer(1, 5)],
-        [Paragraph('Α.Δ.Τ: ', styles['DilosiBold']), Paragraph(
-            info['id_number'], styles['Dilosi'])],
-        [Spacer(1, 5), Spacer(1, 5)],
-        [Paragraph('Α.Φ.Μ: ', styles['DilosiBold']), Paragraph(
-            info['tax_id'], styles['Dilosi'])],
-        [Spacer(1, 5), Spacer(1, 5)],
-        [Paragraph('Τόπος Κατοικίας: ', styles['DilosiBold']), Paragraph(
-            info['place_of_residence'], styles['Dilosi'])],
-        [Spacer(1, 5), Spacer(1, 5)],
-        [Paragraph('Οδός:', styles['DilosiBold']), Paragraph(
-            info['street'], styles['Dilosi'])],
-        [Spacer(1, 5), Spacer(1, 5)],
-        [Paragraph('Αριθμός: ', styles['DilosiBold']), Paragraph(
-            info['street_number'], styles['Dilosi'])],
-        [Spacer(1, 5), Spacer(1, 5)],
-        [Paragraph('Τ.Κ: ', styles['DilosiBold']), Paragraph(
-            info['postal_code'], styles['Dilosi'])],
-        [Spacer(1, 5), Spacer(1, 5)],
-        [Paragraph('Email: ', styles['DilosiBold']), Paragraph(
-            info['email'], styles['Dilosi'])],
-        [Spacer(1, 5), Spacer(1, 5)],
-        [Paragraph('Τηλέφωνο: ', styles['DilosiBold']), Paragraph(
-            info['telephone'], styles['Dilosi'])],
-        [Spacer(1, 5), Spacer(1, 5)],
-    ]
-
-    fields = Table(fields)
-    elements.append(fields)
-
-
-def make_results(elements):
-
-    make_totals(elements, info)
-    make_intro(elements, subtitle2)
-    make_intro(elements, subtitle3)
-    make_intro(elements, subtitle4)
+def make_signature(elements):
     signature = [
         [Spacer(5, 10), Paragraph(
             'Ο/Η Δηλ.', styles['DilosiSignature'])],
@@ -162,7 +367,7 @@ styles.add(ParagraphStyle(name='Dilosi',
 
 styles.add(ParagraphStyle(name='DilosiBold',
                           fontName='Roboto-Bold',
-                          fontSize=12,
+                          fontSize=9,
                           leading=16,
                           alignment=TA_JUSTIFY))
 
@@ -170,30 +375,26 @@ styles.add(ParagraphStyle(name='DilosiHeading',
                           fontName='Roboto-Bold',
                           fontSize=16,
                           alignment=TA_CENTER,
-                          spaceAfter=16))
+                          spaceAfter=5))
 
 styles.add(ParagraphStyle(name='DilosiSignature',
                           fontName='Roboto-Regular',
                           fontSize=12,
                           alignment=TA_RIGHT))
-info = load_results(1)
+info = load_results('data.json')
 
 title = 'Υπεύθυνη Δήλωση'
+article = '(άρθρο 8 Ν.1599/1986)'
 subtitle = 'Η ακρίβεια των στοιχείων που υποβάλλονται με αυτή τη δήλωση μπορεί να ελεγχθεί με βάση το αρχείο άλλων υπηρεσιών (άρθρο 8 παρ. 4 Ν. 1599/1986)'
-subtitle2 = 'Με ατομική μου ευθύνη και γνωρίζοντας τις κυρώσεις, που προβλέπονται από τις διατάξεις της παρ. 6 του άρθρου 22 του Ν. 1599/1986, δηλώνω ότι:'
-subtitle3 = 'blablablablabla'
-subtitle4 = 'Γνωρίζω ότι: Όποιος εν γνώσει του δηλώνει ψευδή γεγονότα ή αρνείται ή αποκρύπτει τα αληθινά με έγγραφη υπεύθυνη δήλωση του άρθρου 8 τιμωρείται με φυλάκιση τουλάχιστον τριών μηνών. Εάν ο υπαίτιος αυτών των πράξεων σκόπευε να προσπορίσει στον εαυτόν του ή σε άλλον περιουσιακό όφελος βλάπτοντας τρίτον ή σκόπευε να βλάψει άλλον, τιμωρείται με κάθειρξη μέχρι 10 ετών.'
-
-dilosi_contents = [
-    title,
-    subtitle,
-]
+responsibility_text = 'Με ατομική μου ευθύνη και γνωρίζοντας τις κυρώσεις, που προβλέπονται από τις διατάξεις της παρ. 6 του άρθρου 22 του Ν. 1599/1986, δηλώνω ότι:'
+aknowledgment_text = 'Γνωρίζω ότι: Όποιος εν γνώσει του δηλώνει ψευδή γεγονότα ή αρνείται ή αποκρύπτει τα αληθινά με έγγραφη υπεύθυνη δήλωση του άρθρου 8 τιμωρείται με φυλάκιση τουλάχιστον τριών μηνών. Εάν ο υπαίτιος αυτών των πράξεων σκόπευε να προσπορίσει στον εαυτόν του ή σε άλλον περιουσιακό όφελος βλάπτοντας τρίτον ή σκόπευε να βλάψει άλλον, τιμωρείται με κάθειρξη μέχρι 10 ετών.'
 
 make_heading(elements, [title])
-
+make_heading(elements, [article])
+elements.append(Spacer(1, 12))
 make_intro(elements, subtitle)
-
-make_results(elements)
+elements.append(PageBreak())
+make_signature(elements)
 
 doc.build(elements, onFirstPage=make_first_page_hf,
           onLaterPages=make_later_pages_hf)
