@@ -1,4 +1,5 @@
 import json
+import os.path
 
 from textwrap import wrap
 
@@ -18,10 +19,17 @@ PAGE_WIDTH, PAGE_HEIGHT = A4
 
 pageinfo = "Υπεύθυνη Δήλωση"
 
-pdfmetrics.registerFont(TTFont(
-    'Roboto-Regular', '/usr/share/fonts/truetype/roboto/hinted/Roboto-Regular.ttf'))
-pdfmetrics.registerFont(TTFont(
-    'Roboto-Bold', '/usr/share/fonts/truetype/roboto/hinted/Roboto-Bold.ttf'))
+if(os.path.exists('/usr/share/fonts/truetype/roboto/hinted/Roboto-Regular.ttf')):
+    pdfmetrics.registerFont(TTFont(
+        'Roboto-Regular', '/usr/share/fonts/truetype/roboto/hinted/Roboto-Regular.ttf'))
+    pdfmetrics.registerFont(TTFont(
+        'Roboto-Bold', '/usr/share/fonts/truetype/roboto/hinted/Roboto-Bold.ttf'))
+else:
+    pdfmetrics.registerFont(TTFont(
+        'Roboto-Regular', '/System/Library/Fonts/Supplemental/Arial.ttf'))
+    pdfmetrics.registerFont(TTFont(
+        'Roboto-Bold', '/System/Library/Fonts/Supplemental/Arial Bold.ttf'))
+
 
 info = {}
 
@@ -36,7 +44,6 @@ def load_results(filename):
 
 def make_first_page_hf(canvas, doc):
     canvas.saveState()
-    textobject = canvas.beginText()
     canvas.drawImage('logo.jpg',
                      x=PAGE_WIDTH - 12 * cm,
                      y=PAGE_HEIGHT - 2.7 * cm,
@@ -48,6 +55,7 @@ def make_first_page_hf(canvas, doc):
     # PROS Box
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 7.85 * cm, 2.5 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(2.4 * cm, PAGE_HEIGHT - 7.80 *
                              cm)
     # Set font face and size
@@ -57,9 +65,11 @@ def make_first_page_hf(canvas, doc):
     # PROS Value
     canvas.roundRect(4.5 * cm, PAGE_HEIGHT - 7.85 * cm, 14.5 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
-    textobject.setTextOrigin(4.8 * cm, PAGE_HEIGHT - 7.80 *
+    textobject.setTextOrigin(5 * cm, PAGE_HEIGHT - 7.80 *
                              cm)
-    textobject.setFont('Roboto-Regular', 10)
+    # Calculate font size programmatically
+    font_size = calculate_font_size(10, 14.5, info['to'], 0.5, 0.5)
+    textobject.setFont('Roboto-Regular', font_size)
     textobject.textLine(text=info['to'])
     canvas.drawText(textobject)
     # ONOMA Box
@@ -73,9 +83,10 @@ def make_first_page_hf(canvas, doc):
     # ONOMA Value
     canvas.roundRect(4.5 * cm, PAGE_HEIGHT - 8.85 * cm, 6 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
-    textobject.setTextOrigin(4.8 * cm, PAGE_HEIGHT - 8.80 *
+    textobject.setTextOrigin(5 * cm, PAGE_HEIGHT - 8.80 *
                              cm)
-    textobject.setFont('Roboto-Regular', 10)
+    font_size = calculate_font_size(10, 6, info['name'], 0.5, 0.5)
+    textobject.setFont('Roboto-Regular', font_size)
     textobject.textLine(text=info['name'])
     canvas.drawText(textobject)
     # EPWNIMO Box
@@ -91,7 +102,8 @@ def make_first_page_hf(canvas, doc):
                      cm, 1 * cm, 2, stroke=1, fill=0)
     textobject.setTextOrigin(13.5 * cm, PAGE_HEIGHT - 8.80 *
                              cm)
-    textobject.setFont('Roboto-Regular', 10)
+    font_size = calculate_font_size(10, 6, info['surname'], 0.5, 0.5)
+    textobject.setFont('Roboto-Regular', font_size)
     textobject.textLine(text=info['surname'])
     canvas.drawText(textobject)
     # ONOMA PATERA Box
@@ -107,7 +119,8 @@ def make_first_page_hf(canvas, doc):
                      cm, 1 * cm, 2, stroke=1, fill=0)
     textobject.setTextOrigin(7 * cm, PAGE_HEIGHT - 9.80 *
                              cm)
-    textobject.setFont('Roboto-Regular', 10)
+    font_size = calculate_font_size(10, 12.5, info['father_name'], 0.5, 0.5)
+    textobject.setFont('Roboto-Regular', font_size)
     textobject.textLine(text=info['father_name'])
     canvas.drawText(textobject)
     # ONOMA MITERA Box
@@ -123,7 +136,8 @@ def make_first_page_hf(canvas, doc):
                      cm, 1 * cm, 2, stroke=1, fill=0)
     textobject.setTextOrigin(7 * cm, PAGE_HEIGHT - 10.80 *
                              cm)
-    textobject.setFont('Roboto-Regular', 10)
+    font_size = calculate_font_size(10, 12.5, info['mother_name'], 0.5, 0.5)
+    textobject.setFont('Roboto-Regular', font_size)
     textobject.textLine(text=info['mother_name'])
     canvas.drawText(textobject)
     # HM GENNISIS Box
@@ -139,7 +153,8 @@ def make_first_page_hf(canvas, doc):
                      cm, 1 * cm, 2, stroke=1, fill=0)
     textobject.setTextOrigin(7 * cm, PAGE_HEIGHT - 11.80 *
                              cm)
-    textobject.setFont('Roboto-Regular', 10)
+    font_size = calculate_font_size(10, 12.5, info['date_of_birth'], 0.5, 0.5)
+    textobject.setFont('Roboto-Regular', font_size)
     textobject.textLine(text=info['date_of_birth'])
     canvas.drawText(textobject)
     # TOPOS GENNISIS Box
@@ -155,7 +170,8 @@ def make_first_page_hf(canvas, doc):
                      cm, 1 * cm, 2, stroke=1, fill=0)
     textobject.setTextOrigin(7 * cm, PAGE_HEIGHT - 12.80 *
                              cm)
-    textobject.setFont('Roboto-Regular', 10)
+    font_size = calculate_font_size(10, 12.5, info['birth_place'], 0.5, 0.5)
+    textobject.setFont('Roboto-Regular', font_size)
     textobject.textLine(text=info['birth_place'])
     canvas.drawText(textobject)
     # ID Box
@@ -171,7 +187,8 @@ def make_first_page_hf(canvas, doc):
                      cm, 1 * cm, 2, stroke=1, fill=0)
     textobject.setTextOrigin(7 * cm, PAGE_HEIGHT - 13.80 *
                              cm)
-    textobject.setFont('Roboto-Regular', 10)
+    font_size = calculate_font_size(10, 4.5, info['id_number'], 0.5, 0.5)
+    textobject.setFont('Roboto-Regular', font_size)
     textobject.textLine(text=info['id_number'])
     canvas.drawText(textobject)
     # TIL Box
@@ -187,7 +204,8 @@ def make_first_page_hf(canvas, doc):
                      cm, 1 * cm, 2, stroke=1, fill=0)
     textobject.setTextOrigin(13 * cm, PAGE_HEIGHT - 13.80 *
                              cm)
-    textobject.setFont('Roboto-Regular', 10)
+    font_size = calculate_font_size(10, 6.5, info['telephone'], 0.5, 0.5)
+    textobject.setFont('Roboto-Regular', font_size)
     textobject.textLine(text=info['telephone'])
     canvas.drawText(textobject)
     # TOPOS KATOIKIAS Box
@@ -203,7 +221,9 @@ def make_first_page_hf(canvas, doc):
                      cm, 1 * cm, 2, stroke=1, fill=0)
     textobject.setTextOrigin(5.5 * cm, PAGE_HEIGHT - 14.80 *
                              cm)
-    textobject.setFont('Roboto-Regular', 10)
+    font_size = calculate_font_size(
+        10, 3.5, info['place_of_residence'], 0.5, 0.5)
+    textobject.setFont('Roboto-Regular', font_size)
     textobject.textLine(text=info['place_of_residence'])
     canvas.drawText(textobject)
     # ODOS Box
@@ -219,7 +239,8 @@ def make_first_page_hf(canvas, doc):
                      cm, 1 * cm, 2, stroke=1, fill=0)
     textobject.setTextOrigin(10.7 * cm, PAGE_HEIGHT - 14.80 *
                              cm)
-    textobject.setFont('Roboto-Regular', 10)
+    font_size = calculate_font_size(10, 3.1, info['street'], 0.5, 0.5)
+    textobject.setFont('Roboto-Regular', font_size)
     textobject.textLine(text=info['street'])
     canvas.drawText(textobject)
     # Arithmos Box
@@ -235,7 +256,8 @@ def make_first_page_hf(canvas, doc):
                      cm, 1 * cm, 2, stroke=1, fill=0)
     textobject.setTextOrigin(15.3 * cm, PAGE_HEIGHT - 14.80 *
                              cm)
-    textobject.setFont('Roboto-Regular', 10)
+    font_size = calculate_font_size(10, 1.1, info['street_number'], 0.5, 0.5)
+    textobject.setFont('Roboto-Regular', font_size)
     textobject.textLine(text=info['street_number'])
     canvas.drawText(textobject)
     # ΤΚ Box
@@ -251,7 +273,8 @@ def make_first_page_hf(canvas, doc):
                      cm, 1 * cm, 2, stroke=1, fill=0)
     textobject.setTextOrigin(17.5 * cm, PAGE_HEIGHT - 14.80 *
                              cm)
-    textobject.setFont('Roboto-Regular', 10)
+    font_size = calculate_font_size(10, 2, info['postal_code'], 0.5, 0.5)
+    textobject.setFont('Roboto-Regular', font_size)
     textobject.textLine(text=info['postal_code'])
     canvas.drawText(textobject)
     # AFM Box
@@ -267,7 +290,8 @@ def make_first_page_hf(canvas, doc):
                      cm, 1 * cm, 2, stroke=1, fill=0)
     textobject.setTextOrigin(7 * cm, PAGE_HEIGHT - 15.80 *
                              cm)
-    textobject.setFont('Roboto-Regular', 10)
+    font_size = calculate_font_size(10, 4, info['tax_id'], 0.5, 0.5)
+    textobject.setFont('Roboto-Regular', font_size)
     textobject.textLine(text=info['tax_id'])
     canvas.drawText(textobject)
     # EMAIL Box
@@ -283,7 +307,8 @@ def make_first_page_hf(canvas, doc):
                      cm, 1 * cm, 2, stroke=1, fill=0)
     textobject.setTextOrigin(13.5 * cm, PAGE_HEIGHT - 15.80 *
                              cm)
-    textobject.setFont('Roboto-Regular', 10)
+    font_size = calculate_font_size(10, 6, info['email'], 0.5, 0.5)
+    textobject.setFont('Roboto-Regular', font_size)
     textobject.textLine(text=info['email'])
     canvas.drawText(textobject)
     # RESPONSIBILITY TEXT
@@ -314,6 +339,21 @@ def make_first_page_hf(canvas, doc):
     textobject.textLines(wrap_text)
     canvas.drawText(textobject)
     canvas.restoreState()
+
+
+# Convert points to centimeters
+def pt_to_cm(pt):
+    return "%.05f" % (pt / 28.346)
+
+
+# Calculate Recursively the appropriate font size
+def calculate_font_size(font_size, avail_space, text, start_margin, end_margin):
+    textWidth = stringWidth(text, 'Roboto-Regular', font_size)
+    margins = start_margin + end_margin
+    if(float(pt_to_cm(textWidth)) < avail_space - margins):
+        return float("%.01f" % font_size)
+    else:
+        return calculate_font_size(font_size - 0.1, avail_space, text, start_margin, end_margin)
 
 
 def make_later_pages_hf(canvas, doc):
@@ -354,7 +394,7 @@ def make_signature(elements):
     elements.append(signature)
 
 
-doc = SimpleDocTemplate("Υπεύθυνη Δήλωση.pdf", pagesize=A4)
+doc = SimpleDocTemplate("Solemn_Declaration.pdf", pagesize=A4)
 
 elements = []
 
