@@ -65,6 +65,7 @@ def make_first_page_hf(canvas, doc):
     # PROS Value
     canvas.roundRect(4.5 * cm, PAGE_HEIGHT - 7.85 * cm, 14.5 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(5 * cm, PAGE_HEIGHT - 7.80 *
                              cm)
     # Calculate font size programmatically
@@ -75,6 +76,7 @@ def make_first_page_hf(canvas, doc):
     # ONOMA Box
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 8.85 * cm, 2.5 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(2.1 * cm, PAGE_HEIGHT - 8.79 *
                              cm)
     textobject.setFont('Roboto-Bold', 9)
@@ -83,6 +85,7 @@ def make_first_page_hf(canvas, doc):
     # ONOMA Value
     canvas.roundRect(4.5 * cm, PAGE_HEIGHT - 8.85 * cm, 6 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(5 * cm, PAGE_HEIGHT - 8.80 *
                              cm)
     font_size = calculate_font_size(10, 6, info['name'], 0.5, 0.5)
@@ -92,6 +95,7 @@ def make_first_page_hf(canvas, doc):
     # EPWNIMO Box
     canvas.roundRect(10.5 * cm, PAGE_HEIGHT - 8.85 * cm, 2.5 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(11 * cm, PAGE_HEIGHT - 8.79 *
                              cm)
     textobject.setFont('Roboto-Bold', 9)
@@ -100,6 +104,7 @@ def make_first_page_hf(canvas, doc):
     # EPWNIMO Value
     canvas.roundRect(13 * cm, PAGE_HEIGHT - 8.85 * cm, 6 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(13.5 * cm, PAGE_HEIGHT - 8.80 *
                              cm)
     font_size = calculate_font_size(10, 6, info['surname'], 0.5, 0.5)
@@ -109,6 +114,7 @@ def make_first_page_hf(canvas, doc):
     # ONOMA PATERA Box
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 9.85 * cm, 4.5 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(2.1 * cm, PAGE_HEIGHT - 9.80 *
                              cm)
     textobject.setFont('Roboto-Bold', 9)
@@ -117,6 +123,7 @@ def make_first_page_hf(canvas, doc):
     # ONOMA PATERA Value
     canvas.roundRect(6.5 * cm, PAGE_HEIGHT - 9.85 * cm, 12.5 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(7 * cm, PAGE_HEIGHT - 9.80 *
                              cm)
     font_size = calculate_font_size(10, 12.5, info['father_name'], 0.5, 0.5)
@@ -126,6 +133,7 @@ def make_first_page_hf(canvas, doc):
     # ONOMA MITERA Box
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 10.85 * cm, 4.5 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(2.05 * cm, PAGE_HEIGHT - 10.80 *
                              cm)
     textobject.setFont('Roboto-Bold', 9)
@@ -134,6 +142,7 @@ def make_first_page_hf(canvas, doc):
     # ONOMA MITERA Value
     canvas.roundRect(6.5 * cm, PAGE_HEIGHT - 10.85 * cm, 12.5 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(7 * cm, PAGE_HEIGHT - 10.80 *
                              cm)
     font_size = calculate_font_size(10, 12.5, info['mother_name'], 0.5, 0.5)
@@ -143,6 +152,7 @@ def make_first_page_hf(canvas, doc):
     # HM GENNISIS Box
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 11.85 * cm, 4.5 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(2.1 * cm, PAGE_HEIGHT - 11.80 *
                              cm)
     textobject.setFont('Roboto-Bold', 9)
@@ -151,6 +161,7 @@ def make_first_page_hf(canvas, doc):
     # HM GENNISIS Value
     canvas.roundRect(6.5 * cm, PAGE_HEIGHT - 11.85 * cm, 12.5 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(7 * cm, PAGE_HEIGHT - 11.80 *
                              cm)
     font_size = calculate_font_size(10, 12.5, info['date_of_birth'], 0.5, 0.5)
@@ -160,6 +171,7 @@ def make_first_page_hf(canvas, doc):
     # TOPOS GENNISIS Box
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 12.85 * cm, 4.5 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(2.1 * cm, PAGE_HEIGHT - 12.80 *
                              cm)
     textobject.setFont('Roboto-Bold', 9)
@@ -168,6 +180,7 @@ def make_first_page_hf(canvas, doc):
     # TOPOS GENNISIS Value
     canvas.roundRect(6.5 * cm, PAGE_HEIGHT - 12.85 * cm, 12.5 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(7 * cm, PAGE_HEIGHT - 12.80 *
                              cm)
     font_size = calculate_font_size(10, 12.5, info['birth_place'], 0.5, 0.5)
@@ -177,6 +190,7 @@ def make_first_page_hf(canvas, doc):
     # ID Box
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 13.85 * cm, 4.5 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(2.05 * cm, PAGE_HEIGHT - 13.80 *
                              cm)
     textobject.setFont('Roboto-Bold', 9)
@@ -185,6 +199,7 @@ def make_first_page_hf(canvas, doc):
     # ID Value
     canvas.roundRect(6.5 * cm, PAGE_HEIGHT - 13.85 * cm, 4.5 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(7 * cm, PAGE_HEIGHT - 13.80 *
                              cm)
     font_size = calculate_font_size(10, 4.5, info['id_number'], 0.5, 0.5)
@@ -194,6 +209,7 @@ def make_first_page_hf(canvas, doc):
     # TIL Box
     canvas.roundRect(11 * cm, PAGE_HEIGHT - 13.85 * cm, 1.5 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(11.3 * cm, PAGE_HEIGHT - 13.80 *
                              cm)
     textobject.setFont('Roboto-Bold', 9)
@@ -202,6 +218,7 @@ def make_first_page_hf(canvas, doc):
     # TIL Value
     canvas.roundRect(12.5 * cm, PAGE_HEIGHT - 13.85 * cm, 6.5 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(13 * cm, PAGE_HEIGHT - 13.80 *
                              cm)
     font_size = calculate_font_size(10, 6.5, info['telephone'], 0.5, 0.5)
@@ -211,6 +228,7 @@ def make_first_page_hf(canvas, doc):
     # TOPOS KATOIKIAS Box
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 14.85 * cm, 3 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(2.1 * cm, PAGE_HEIGHT - 14.80 *
                              cm)
     textobject.setFont('Roboto-Bold', 9)
@@ -219,6 +237,7 @@ def make_first_page_hf(canvas, doc):
     # TOPOS KATOIKIAS Value
     canvas.roundRect(5 * cm, PAGE_HEIGHT - 14.85 * cm, 3.5 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(5.5 * cm, PAGE_HEIGHT - 14.80 *
                              cm)
     font_size = calculate_font_size(
@@ -229,6 +248,7 @@ def make_first_page_hf(canvas, doc):
     # ODOS Box
     canvas.roundRect(8.5 * cm, PAGE_HEIGHT - 14.85 * cm, 1.7 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(8.8 * cm, PAGE_HEIGHT - 14.80 *
                              cm)
     textobject.setFont('Roboto-Bold', 9)
@@ -237,6 +257,7 @@ def make_first_page_hf(canvas, doc):
     # ODOS Value
     canvas.roundRect(10.2 * cm, PAGE_HEIGHT - 14.85 * cm, 3.1 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(10.7 * cm, PAGE_HEIGHT - 14.80 *
                              cm)
     font_size = calculate_font_size(10, 3.1, info['street'], 0.5, 0.5)
@@ -246,6 +267,7 @@ def make_first_page_hf(canvas, doc):
     # Arithmos Box
     canvas.roundRect(13.3 * cm, PAGE_HEIGHT - 14.85 * cm, 1.5 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()                     
     textobject.setTextOrigin(13.6 * cm, PAGE_HEIGHT - 14.80 *
                              cm)
     textobject.setFont('Roboto-Bold', 9)
@@ -254,6 +276,7 @@ def make_first_page_hf(canvas, doc):
     # Arithmos Value
     canvas.roundRect(14.8 * cm, PAGE_HEIGHT - 14.85 * cm, 1.1 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(15.3 * cm, PAGE_HEIGHT - 14.80 *
                              cm)
     font_size = calculate_font_size(10, 1.1, info['street_number'], 0.5, 0.5)
@@ -263,6 +286,7 @@ def make_first_page_hf(canvas, doc):
     # ΤΚ Box
     canvas.roundRect(15.9 * cm, PAGE_HEIGHT - 14.85 * cm, 1.1 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(16.2 * cm, PAGE_HEIGHT - 14.80 *
                              cm)
     textobject.setFont('Roboto-Bold', 9)
@@ -271,6 +295,7 @@ def make_first_page_hf(canvas, doc):
     # ΤΚ Value
     canvas.roundRect(17 * cm, PAGE_HEIGHT - 14.85 * cm, 2 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(17.5 * cm, PAGE_HEIGHT - 14.80 *
                              cm)
     font_size = calculate_font_size(10, 2, info['postal_code'], 0.5, 0.5)
@@ -280,6 +305,7 @@ def make_first_page_hf(canvas, doc):
     # AFM Box
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 15.85 * cm, 4.5 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(3.5 * cm, PAGE_HEIGHT - 15.80 *
                              cm)
     textobject.setFont('Roboto-Bold', 9)
@@ -288,6 +314,7 @@ def make_first_page_hf(canvas, doc):
     # AFM Value
     canvas.roundRect(6.5 * cm, PAGE_HEIGHT - 15.85 * cm, 4 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(7 * cm, PAGE_HEIGHT - 15.80 *
                              cm)
     font_size = calculate_font_size(10, 4, info['tax_id'], 0.5, 0.5)
@@ -297,6 +324,7 @@ def make_first_page_hf(canvas, doc):
     # EMAIL Box
     canvas.roundRect(10.5 * cm, PAGE_HEIGHT - 15.85 * cm, 2.5 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(11.3 * cm, PAGE_HEIGHT - 15.80 *
                              cm)
     textobject.setFont('Roboto-Bold', 9)
@@ -305,6 +333,7 @@ def make_first_page_hf(canvas, doc):
     # EMAIL Value
     canvas.roundRect(13 * cm, PAGE_HEIGHT - 15.85 * cm, 6 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(13.5 * cm, PAGE_HEIGHT - 15.80 *
                              cm)
     font_size = calculate_font_size(10, 6, info['email'], 0.5, 0.5)
@@ -314,6 +343,7 @@ def make_first_page_hf(canvas, doc):
     # RESPONSIBILITY TEXT
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 18 * cm, 17 *
                      cm, 1 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(2.15 * cm, PAGE_HEIGHT - 17.4 *
                              cm)
     textobject.setFont('Roboto-Regular', 9)
@@ -323,6 +353,7 @@ def make_first_page_hf(canvas, doc):
     # DECLARATION TEXT
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 24 * cm, 17 *
                      cm, 5 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(2.2 * cm, PAGE_HEIGHT - 19.5 *
                              cm)
     textobject.setFont('Roboto-Bold', 9)
@@ -332,6 +363,7 @@ def make_first_page_hf(canvas, doc):
     # AKNOWLEDGMENT TEXT
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 27.2 * cm, 17 *
                      cm, 2.2 * cm, 2, stroke=1, fill=0)
+    textobject = canvas.beginText()
     textobject.setTextOrigin(2.1 * cm, PAGE_HEIGHT - 25.5 *
                              cm)
     textobject.setFont('Roboto-Regular', 9)
