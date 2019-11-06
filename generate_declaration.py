@@ -8,7 +8,6 @@ from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Table, Paragraph
 from reportlab.platypus import Spacer, Image
 from reportlab.platypus import PageBreak
-from reportlab.platypus import KeepInFrame
 from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER, TA_RIGHT
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.pdfbase import pdfmetrics
@@ -44,6 +43,7 @@ def load_results(filename):
             info[result] = jsondata[result]
     return info
 
+
 def shrink_to_fit(paragraph, style, assigned_width, assigned_height):
     w, h = paragraph.wrap(assigned_width, assigned_height)
     if assigned_width < w or assigned_height < h:
@@ -54,11 +54,13 @@ def shrink_to_fit(paragraph, style, assigned_width, assigned_height):
         w, h = paragraph.wrap(assigned_width, assigned_height)
     return paragraph, style
 
+
 def draw_field(canvas, contents, origin_x, origin_y, width, height):
     style = ParagraphStyle('default', fontName='Roboto-Regular')
     paragraph = Paragraph(contents, style)
     paragraph, _ = shrink_to_fit(paragraph, style, width, height)
-    paragraph.drawOn(canvas, origin_x, origin_y)    
+    paragraph.drawOn(canvas, origin_x, origin_y)
+
 
 def make_first_page_hf(canvas, doc):
     canvas.saveState()
@@ -83,7 +85,7 @@ def make_first_page_hf(canvas, doc):
     textobject.setFont('Roboto-Bold', 9)
     textobject.textLine(text='Προς:')
     canvas.drawText(textobject)
-    
+
     # To value
     canvas.roundRect(4.5 * cm, PAGE_HEIGHT - 7.85 * cm,
                      14.5 * cm, 1 * cm, 0, stroke=1, fill=0)
@@ -338,14 +340,14 @@ def make_first_page_hf(canvas, doc):
     wrap_text = "\n".join(wrap(responsibility_text, 110))
     textobject.textLines(wrap_text)
     canvas.drawText(textobject)
-    
+
     # Declaration text
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 24 * cm, 17 * cm,
                      5 * cm, 2, stroke=1, fill=0)
     draw_field(canvas, info['declaration_text'],
                2.2 * cm, PAGE_HEIGHT - 23 * cm,
                16 * cm, 10 * cm)
-    
+
     # AKNOWLEDGMENT TEXT
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 27.2 * cm, 17 * cm,
                      2.2 * cm, 2, stroke=1, fill=0)
@@ -444,17 +446,18 @@ info = load_results('data.json')
 
 title = 'Υπεύθυνη Δήλωση'
 article = '(άρθρο 8 Ν.1599/1986)'
-subtitle = 'Η ακρίβεια των στοιχείων που υποβάλλονται με αυτή τη δήλωση μπορεί'
-' να ελεγχθεί με βάση το αρχείο άλλων υπηρεσιών (άρθρο 8 παρ. 4 Ν. 1599/1986)'
-responsibility_text = 'Με ατομική μου ευθύνη και γνωρίζοντας τις κυρώσεις, που'
-' προβλέπονται από τις διατάξεις της παρ. 6 του άρθρου 22 του Ν. 1599/1986,'
-'δηλώνω ότι:'
-aknowledgment_text = 'Γνωρίζω ότι: Όποιος εν γνώσει του δηλώνει ψευδή γεγονότα'
-' ή αρνείται ή αποκρύπτει τα αληθινά με έγγραφη υπεύθυνη δήλωση του άρθρου 8 '
-'τιμωρείται με φυλάκιση τουλάχιστον τριών μηνών. Εάν ο υπαίτιος αυτών των '
-'πράξεων σκόπευε να προσπορίσει στον εαυτόν του ή σε άλλον περιουσιακό όφελος '
-'βλάπτοντας τρίτον ή σκόπευε να βλάψει άλλον, τιμωρείται με κάθειρξη μέχρι 10 '
-'ετών.'
+subtitle = 'Η ακρίβεια των στοιχείων που υποβάλλονται με αυτή τη '\
+    'δήλωση μπορεί να ελεγχθεί με βάση το αρχείο άλλων υπηρεσιών '\
+    '(άρθρο 8 παρ. 4 Ν. 1599/1986)'
+responsibility_text = 'Με ατομική μου ευθύνη και γνωρίζοντας τις '\
+    'κυρώσεις, πουπροβλέπονται από τις διατάξεις της παρ. 6 του άρθρου '\
+    '22 του Ν. 1599/1986, δηλώνω ότι:'
+aknowledgment_text = 'Γνωρίζω ότι: Όποιος εν γνώσει του δηλώνει ψευδή '\
+    'γεγονότα ή αρνείται ή αποκρύπτει τα αληθινά με έγγραφη υπεύθυνη'\
+    ' δήλωση του άρθρου τιμωρείται με φυλάκιση τουλάχιστον τριών μηνών.'\
+    ' Εάν ο υπαίτιος αυτών των πράξεων σκόπευε να προσπορίσει στον εαυτόν'\
+    ' του ή σε άλλον περιουσιακό όφελος βλάπτοντας τρίτον ή σκόπευε'\
+    ' να βλάψει άλλον, τιμωρείται με κάθειρξη μέχρι 10 ετών.'\
 
 make_heading(elements, [title])
 make_heading(elements, [article])
