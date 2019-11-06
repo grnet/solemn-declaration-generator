@@ -8,6 +8,7 @@ from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Table, Paragraph
 from reportlab.platypus import Spacer, Image
 from reportlab.platypus import PageBreak
+from reportlab.platypus import KeepInFrame
 from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER, TA_RIGHT
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.pdfbase import pdfmetrics
@@ -43,6 +44,21 @@ def load_results(filename):
             info[result] = jsondata[result]
     return info
 
+def shrink_to_fit(paragraph, style, assigned_width, assigned_height):
+    w, h = paragraph.wrap(assigned_width, assigned_height)
+    if assigned_width < w or assigned_height < h:
+        style = style.clone('default')
+    while assigned_width < w or assigned_height < h:
+        style.fontSize -= 1
+        paragraph = Paragraph(paragraph.text, style)
+        w, h = paragraph.wrap(assigned_width, assigned_height)
+    return paragraph, style
+
+def draw_field(canvas, contents, origin_x, origin_y, width, height):
+    style = ParagraphStyle('default', fontName='Roboto-Regular')
+    paragraph = Paragraph(contents, style)
+    paragraph, _ = shrink_to_fit(paragraph, style, width, height)
+    paragraph.drawOn(canvas, origin_x, origin_y)    
 
 def make_first_page_hf(canvas, doc):
     canvas.saveState()
@@ -57,6 +73,7 @@ def make_first_page_hf(canvas, doc):
     # Frame Rectangle
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 15.85 * cm,
                      17 * cm, 9 * cm, 3, stroke=1, fill=0)
+
     # To Box
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 7.85 * cm,
                      2.5 * cm, 1 * cm, 0, stroke=1, fill=0)
@@ -66,17 +83,15 @@ def make_first_page_hf(canvas, doc):
     textobject.setFont('Roboto-Bold', 9)
     textobject.textLine(text='Προς:')
     canvas.drawText(textobject)
-    # To Value
+    
+    # To value
     canvas.roundRect(4.5 * cm, PAGE_HEIGHT - 7.85 * cm,
                      14.5 * cm, 1 * cm, 0, stroke=1, fill=0)
-    textobject = canvas.beginText()
-    textobject.setTextOrigin(5 * cm, PAGE_HEIGHT - 7.80 * cm)
-    # Calculate font size programmatically
-    font_size = calculate_font_size(10, 14.5, info['to'], 0.5, 0.5)
-    textobject.setFont('Roboto-Regular', font_size)
-    textobject.textLine(text=info['to'])
-    canvas.drawText(textobject)
-    # Name Box
+    draw_field(canvas, info['to'],
+               5 * cm, PAGE_HEIGHT - 7.80 * cm,
+               13 * cm, 1 * cm)
+
+    # Name box
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 8.85 * cm,
                      2.5 * cm, 1 * cm, 0, stroke=1, fill=0)
     textobject = canvas.beginText()
@@ -84,16 +99,15 @@ def make_first_page_hf(canvas, doc):
     textobject.setFont('Roboto-Bold', 9)
     textobject.textLine(text='Ο - Η Όνομα:')
     canvas.drawText(textobject)
-    # Name Value
-    canvas.roundRect(4.5 * cm, PAGE_HEIGHT - 8.85 * cm,
-                     6 * cm, 1 * cm, 0, stroke=1, fill=0)
-    textobject = canvas.beginText()
-    textobject.setTextOrigin(5 * cm, PAGE_HEIGHT - 8.80 * cm)
-    font_size = calculate_font_size(10, 6, info['name'], 0.5, 0.5)
-    textobject.setFont('Roboto-Regular', font_size)
-    textobject.textLine(text=info['name'])
-    canvas.drawText(textobject)
-    # Surname Box
+
+    # Name value
+    canvas.roundRect(4.5 * cm, PAGE_HEIGHT - 8.85 * cm, 6 * cm, 1 * cm, 0,
+                     stroke=1, fill=0)
+    draw_field(canvas, info['name'],
+               5 * cm, PAGE_HEIGHT - 8.80 * cm,
+               5 * cm, 1 * cm)
+
+    # Surname box
     canvas.roundRect(10.5 * cm, PAGE_HEIGHT - 8.85 * cm,
                      2.5 * cm, 1 * cm, 0, stroke=1, fill=0)
     textobject = canvas.beginText()
@@ -101,16 +115,15 @@ def make_first_page_hf(canvas, doc):
     textobject.setFont('Roboto-Bold', 9)
     textobject.textLine(text='Επώνυμο:')
     canvas.drawText(textobject)
-    # Surname Value
+
+    # Surname value
     canvas.roundRect(13 * cm, PAGE_HEIGHT - 8.85 * cm,
                      6 * cm, 1 * cm, 0, stroke=1, fill=0)
-    textobject = canvas.beginText()
-    textobject.setTextOrigin(13.5 * cm, PAGE_HEIGHT - 8.80 * cm)
-    font_size = calculate_font_size(10, 6, info['surname'], 0.5, 0.5)
-    textobject.setFont('Roboto-Regular', font_size)
-    textobject.textLine(text=info['surname'])
-    canvas.drawText(textobject)
-    # Father Name Box
+    draw_field(canvas, info['surname'],
+               13.5 * cm, PAGE_HEIGHT - 8.80 * cm,
+               5 * cm, 1 * cm)
+
+    # Father's name box
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 9.85 * cm,
                      4.5 * cm, 1 * cm, 0, stroke=1, fill=0)
     textobject = canvas.beginText()
@@ -118,7 +131,8 @@ def make_first_page_hf(canvas, doc):
     textobject.setFont('Roboto-Bold', 9)
     textobject.textLine(text='Όνομα και Επώνυμο Πατέρα:')
     canvas.drawText(textobject)
-    # Father Name Value
+
+    # Father's name value
     canvas.roundRect(6.5 * cm, PAGE_HEIGHT - 9.85 * cm,
                      12.5 * cm, 1 * cm, 0, stroke=1, fill=0)
     textobject = canvas.beginText()
@@ -324,15 +338,14 @@ def make_first_page_hf(canvas, doc):
     wrap_text = "\n".join(wrap(responsibility_text, 110))
     textobject.textLines(wrap_text)
     canvas.drawText(textobject)
-    # DECLARATION TEXT
+    
+    # Declaration text
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 24 * cm, 17 * cm,
                      5 * cm, 2, stroke=1, fill=0)
-    textobject = canvas.beginText()
-    textobject.setTextOrigin(2.2 * cm, PAGE_HEIGHT - 19.5 * cm)
-    textobject.setFont('Roboto-Bold', 9)
-    wrap_text = "\n".join(wrap(info['declaration_text'], 120))
-    textobject.textLines(wrap_text)
-    canvas.drawText(textobject)
+    draw_field(canvas, info['declaration_text'],
+               2.2 * cm, PAGE_HEIGHT - 23 * cm,
+               16 * cm, 10 * cm)
+    
     # AKNOWLEDGMENT TEXT
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 27.2 * cm, 17 * cm,
                      2.2 * cm, 2, stroke=1, fill=0)
