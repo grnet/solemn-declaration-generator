@@ -106,11 +106,17 @@ def make_first_page_hf(canvas, doc):
     # Name box
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 8.85 * cm,
                      2.5 * cm, 1 * cm, 0, stroke=1, fill=0)
-    textobject = canvas.beginText()
-    textobject.setTextOrigin(2.1 * cm, PAGE_HEIGHT - 8.79 * cm)
-    textobject.setFont('Roboto-Bold', 9)
-    textobject.textLine(text='Ο - Η Όνομα:')
-    canvas.drawText(textobject)
+    draw_para(canvas, 'Ο - Η Όνομα:',
+              2.1 * cm, PAGE_HEIGHT - 8.85 * cm,
+              2.5 * cm, 1* cm,
+              font_name='Roboto-Bold',
+              font_size=9)
+    
+    # textobject = canvas.beginText()
+    # textobject.setTextOrigin(2.1 * cm, PAGE_HEIGHT - 8.79 * cm)
+    # textobject.setFont('Roboto-Bold', 9)
+    # textobject.textLine(text='Ο - Η Όνομα:')
+    # canvas.drawText(textobject)
 
     # Name value
     canvas.roundRect(4.5 * cm, PAGE_HEIGHT - 8.85 * cm, 6 * cm, 1 * cm, 0,
@@ -181,15 +187,17 @@ def make_first_page_hf(canvas, doc):
     draw_para(canvas, info['date_of_birth'],
                7.5 * cm, PAGE_HEIGHT - 11.80 * cm,
                11 * cm, 1 * cm)
-    # Birthplace Box
+    
+    # Birthplace box
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 12.85 * cm,
                      5 * cm, 1 * cm, 0, stroke=1, fill=0)
-    textobject = canvas.beginText()
-    textobject.setTextOrigin(2.1 * cm, PAGE_HEIGHT - 12.80 * cm)
-    textobject.setFont('Roboto-Bold', 9)
-    textobject.textLine(text='Τόπος Γέννησης:')
-    canvas.drawText(textobject)
-    # Birthplace Value
+    draw_para(canvas, 'Τόπος Γέννησης:',
+              2.1 * cm, PAGE_HEIGHT - 12.8 * cm,
+              11 * cm, 1 * cm,
+              font_name='Roboto-Bold',
+              font_size=9)
+
+    # Birthplace value    
     canvas.roundRect(7 * cm, PAGE_HEIGHT - 12.85 * cm,
                      12 * cm, 1 * cm, 0, stroke=1, fill=0)
     draw_para(canvas, info['birth_place'],
