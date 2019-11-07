@@ -5,7 +5,7 @@ from textwrap import wrap
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm
-from reportlab.platypus import SimpleDocTemplate, Table, Paragraph
+from reportlab.platypus import SimpleDocTemplate, Table, Paragraph, Frame
 from reportlab.platypus import Spacer, Image
 from reportlab.platypus import PageBreak
 from reportlab.platypus import KeepInFrame
@@ -54,16 +54,25 @@ def shrink_to_fit(paragraph, style, assigned_width, assigned_height):
         w, h = paragraph.wrap(assigned_width, assigned_height)
     return paragraph, style
 
-def draw_field(canvas, contents, origin_x, origin_y, width, height):
-    style = ParagraphStyle('default', fontName='Roboto-Regular')
+def create_para(contents, width, height, font_size=10):
+    style = ParagraphStyle('default',
+                           fontName='Roboto-Regular',
+                           fontSize=font_size)
     paragraph = Paragraph(contents, style)
     paragraph, _ = shrink_to_fit(paragraph, style, width, height)
+    return paragraph
+
+def draw_para(canvas, contents, origin_x, origin_y, width, height,
+              font_size=10):
+    paragraph = create_para(contents, 
+                            width, height,
+                            font_size=10)
     paragraph.drawOn(canvas, origin_x, origin_y)    
 
 def make_first_page_hf(canvas, doc):
     canvas.saveState()
     canvas.drawImage('coat_of_arms_of_greece.png',
-                     x=PAGE_WIDTH - 11.5 * cm,
+                     x=PAGE_WIDTH - PAGE_WIDTH/2 - 1.75 * cm / 2,
                      y=PAGE_HEIGHT - 2.7 * cm,
                      width=1.75 * cm,
                      height=1.75 * cm)
@@ -87,7 +96,7 @@ def make_first_page_hf(canvas, doc):
     # To value
     canvas.roundRect(4.5 * cm, PAGE_HEIGHT - 7.85 * cm,
                      14.5 * cm, 1 * cm, 0, stroke=1, fill=0)
-    draw_field(canvas, info['to'],
+    draw_para(canvas, info['to'],
                5 * cm, PAGE_HEIGHT - 7.80 * cm,
                13 * cm, 1 * cm)
 
@@ -103,7 +112,7 @@ def make_first_page_hf(canvas, doc):
     # Name value
     canvas.roundRect(4.5 * cm, PAGE_HEIGHT - 8.85 * cm, 6 * cm, 1 * cm, 0,
                      stroke=1, fill=0)
-    draw_field(canvas, info['name'],
+    draw_para(canvas, info['name'],
                5 * cm, PAGE_HEIGHT - 8.80 * cm,
                5 * cm, 1 * cm)
 
@@ -119,7 +128,7 @@ def make_first_page_hf(canvas, doc):
     # Surname value
     canvas.roundRect(13 * cm, PAGE_HEIGHT - 8.85 * cm,
                      6 * cm, 1 * cm, 0, stroke=1, fill=0)
-    draw_field(canvas, info['surname'],
+    draw_para(canvas, info['surname'],
                13.5 * cm, PAGE_HEIGHT - 8.80 * cm,
                5 * cm, 1 * cm)
 
@@ -329,32 +338,39 @@ def make_first_page_hf(canvas, doc):
     textobject.setFont('Roboto-Regular', font_size)
     textobject.textLine(text=info['email'])
     canvas.drawText(textobject)
-    # RESPONSIBILITY TEXT
-    canvas.roundRect(2 * cm, PAGE_HEIGHT - 18 * cm, 17 * cm,
-                     1 * cm, 2, stroke=1, fill=0)
-    textobject = canvas.beginText()
-    textobject.setTextOrigin(2.15 * cm, PAGE_HEIGHT - 17.4 * cm)
-    textobject.setFont('Roboto-Regular', 9)
-    wrap_text = "\n".join(wrap(responsibility_text, 110))
-    textobject.textLines(wrap_text)
-    canvas.drawText(textobject)
+    
+    # Preamble text
+    # canvas.roundRect(2 * cm, PAGE_HEIGHT - 18 * cm, 17 * cm,
+    #                  1 * cm, 2, stroke=1, fill=0)
+    draw_para(canvas, PREAMBLE,
+               2.2 * cm, PAGE_HEIGHT - 17.40 * cm,
+               16 * cm, 2 * cm)
     
     # Declaration text
-    canvas.roundRect(2 * cm, PAGE_HEIGHT - 24 * cm, 17 * cm,
-                     5 * cm, 2, stroke=1, fill=0)
-    draw_field(canvas, info['declaration_text'],
-               2.2 * cm, PAGE_HEIGHT - 23 * cm,
+    draw_para(canvas, info['declaration_text'],
+               2.2 * cm, PAGE_HEIGHT - 21.5 * cm,
                16 * cm, 10 * cm)
+
     
-    # AKNOWLEDGMENT TEXT
-    canvas.roundRect(2 * cm, PAGE_HEIGHT - 27.2 * cm, 17 * cm,
-                     2.2 * cm, 2, stroke=1, fill=0)
-    textobject = canvas.beginText()
-    textobject.setTextOrigin(2.1 * cm, PAGE_HEIGHT - 25.5 * cm)
-    textobject.setFont('Roboto-Regular', 9)
-    wrap_text = "\n".join(wrap(aknowledgment_text, 100))
-    textobject.textLines(wrap_text)
-    canvas.drawText(textobject)
+    # Footnotes
+    fn_frame = Frame(2.2 * cm,
+                     PAGE_HEIGHT - 28 * cm,
+                     16 * cm, 3 * cm)
+    footnotes = []
+    recipient = create_para(RECIPIENT_FN,
+                           16 * cm, 1 * cm,
+                           font_size=8)
+    footnotes.append(recipient)        
+    numerals = create_para(NUMERALS_FN,
+                           16 * cm, 1 * cm,
+                           font_size=8)
+    footnotes.append(numerals)    
+    sanctions = create_para(SANCTIONS_FN,
+                            16 * cm, 3 * cm,
+                            font_size=8)
+    footnotes.append(sanctions)
+    fn_frame.addFromList(footnotes, canvas)
+
     canvas.restoreState()
 
 
@@ -390,7 +406,7 @@ def make_heading(element, contents):
 
 def make_intro(elements, contents):
     elements.append(Spacer(1, 12))
-    elements.append(Paragraph(contents, styles["Dilosi"]))
+    elements.append(Paragraph(contents, styles["Warning"]))
 
 
 def make_signature(elements):
@@ -418,11 +434,11 @@ doc = SimpleDocTemplate("solemn_declaration.pdf", pagesize=A4)
 elements = []
 
 styles = getSampleStyleSheet()
-styles.add(ParagraphStyle(name='Dilosi',
+styles.add(ParagraphStyle(name='Warning',
                           fontName='Roboto-Regular',
-                          fontSize=12,
+                          fontSize=8,
                           leading=16,
-                          alignment=TA_JUSTIFY))
+                          alignment=TA_CENTER))
 
 styles.add(ParagraphStyle(name='DilosiBold',
                           fontName='Roboto-Bold',
@@ -444,22 +460,33 @@ info = load_results('data.json')
 
 title = 'Υπεύθυνη Δήλωση'
 article = '(άρθρο 8 Ν.1599/1986)'
-subtitle = 'Η ακρίβεια των στοιχείων που υποβάλλονται με αυτή τη δήλωση μπορεί'
-' να ελεγχθεί με βάση το αρχείο άλλων υπηρεσιών (άρθρο 8 παρ. 4 Ν. 1599/1986)'
-responsibility_text = 'Με ατομική μου ευθύνη και γνωρίζοντας τις κυρώσεις, που'
-' προβλέπονται από τις διατάξεις της παρ. 6 του άρθρου 22 του Ν. 1599/1986,'
-'δηλώνω ότι:'
-aknowledgment_text = 'Γνωρίζω ότι: Όποιος εν γνώσει του δηλώνει ψευδή γεγονότα'
-' ή αρνείται ή αποκρύπτει τα αληθινά με έγγραφη υπεύθυνη δήλωση του άρθρου 8 '
-'τιμωρείται με φυλάκιση τουλάχιστον τριών μηνών. Εάν ο υπαίτιος αυτών των '
-'πράξεων σκόπευε να προσπορίσει στον εαυτόν του ή σε άλλον περιουσιακό όφελος '
-'βλάπτοντας τρίτον ή σκόπευε να βλάψει άλλον, τιμωρείται με κάθειρξη μέχρι 10 '
-'ετών.'
+
+WARNING = ('Η ακρίβεια των στοιχείων που υποβάλλονται με αυτή τη δήλωση '
+           'μπορεί να ελεγχθεί με βάση το αρχείο άλλων υπηρεσιών '
+           '(άρθρο 8 παρ. 4 Ν. 1599/1986).')
+
+PREAMBLE = ('Με ατομική μου ευθύνη και γνωρίζοντας τις κυρώσεις,'
+            '<super>(3)</super> '
+            'που προβλέπονται από τις διατάξεις της παρ. 6 του '
+            'άρθρου 22 του Ν. 1599/1986, δηλώνω ότι:')
+
+RECIPIENT_FN= ('(1) Αναγράφεται από τον ενδιαφερόμενο πολίτη ή αρχή ή '
+               'υπηρεσία του δημόσιου τομέα όπου απευθύνεται η αίτηση.')
+
+NUMERALS_FN = '(2) Αναγράφεται ολογράφως.'
+
+SANCTIONS_FN = ('(3) Γνωρίζω ότι: Όποιος εν γνώσει του δηλώνει ψευδή γεγονότα '
+                'ή αρνείται ή αποκρύπτει τα αληθινά με έγγραφη υπεύθυνη '
+                'δήλωση του άρθρου 8 τιμωρείται με φυλάκιση τουλάχιστον τριών '
+                'μηνών. Εάν ο υπαίτιος αυτών των πράξεων σκόπευε να '
+                'προσπορίσει στον εαυτόν του ή σε άλλον περιουσιακό όφελος '
+                'βλάπτοντας τρίτον ή σκόπευε να βλάψει άλλον, τιμωρείται με '
+                'κάθειρξη μέχρι 10 ετών.')
 
 make_heading(elements, [title])
 make_heading(elements, [article])
 elements.append(Spacer(1, 12))
-make_intro(elements, subtitle)
+make_intro(elements, WARNING)
 elements.append(PageBreak())
 make_signature(elements)
 
