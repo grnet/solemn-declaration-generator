@@ -54,19 +54,23 @@ def shrink_to_fit(paragraph, style, assigned_width, assigned_height):
         w, h = paragraph.wrap(assigned_width, assigned_height)
     return paragraph, style
 
-def create_para(contents, width, height, font_size=10):
+def create_para(contents, width, height,
+                font_name='Roboto-Regular',
+                font_size=10):
     style = ParagraphStyle('default',
-                           fontName='Roboto-Regular',
+                           fontName=font_name,
                            fontSize=font_size)
     paragraph = Paragraph(contents, style)
     paragraph, _ = shrink_to_fit(paragraph, style, width, height)
     return paragraph
 
 def draw_para(canvas, contents, origin_x, origin_y, width, height,
+              font_name='Roboto-Regular',
               font_size=10):
     paragraph = create_para(contents, 
                             width, height,
-                            font_size=10)
+                            font_name=font_name,
+                            font_size=font_size)
     paragraph.drawOn(canvas, origin_x, origin_y)    
 
 def make_first_page_hf(canvas, doc):
@@ -83,17 +87,16 @@ def make_first_page_hf(canvas, doc):
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 15.85 * cm,
                      17 * cm, 9 * cm, 3, stroke=1, fill=0)
 
-    # To Box
+    # Recipient box
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 7.85 * cm,
                      2.5 * cm, 1 * cm, 0, stroke=1, fill=0)
-    textobject = canvas.beginText()
-    textobject.setTextOrigin(2.4 * cm, PAGE_HEIGHT - 7.80 * cm)
-    # Set font face and size
-    textobject.setFont('Roboto-Bold', 9)
-    textobject.textLine(text='Προς:')
-    canvas.drawText(textobject)
+    draw_para(canvas, 'Προς:<super>(1)</super>',
+              2.1 * cm, PAGE_HEIGHT - 7.8 * cm,
+              2.5 * cm, 1* cm,
+              font_name='Roboto-Bold',
+              font_size=9)
 
-    # To value
+    # Recipient value
     canvas.roundRect(4.5 * cm, PAGE_HEIGHT - 7.85 * cm,
                      14.5 * cm, 1 * cm, 0, stroke=1, fill=0)
     draw_para(canvas, info['to'],
@@ -161,14 +164,17 @@ def make_first_page_hf(canvas, doc):
     draw_para(canvas, info['mother_name'],
                7.5 * cm, PAGE_HEIGHT - 10.80 * cm,
                11 * cm, 1 * cm)
-    # Birth Date Box
+    
+    # Birthday box
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 11.85 * cm,
                      5 * cm, 1 * cm, 0, stroke=1, fill=0)
-    textobject = canvas.beginText()
-    textobject.setTextOrigin(2.1 * cm, PAGE_HEIGHT - 11.80 * cm)
-    textobject.setFont('Roboto-Bold', 9)
-    textobject.textLine(text='Ημερομηνία Γέννησης:')
-    canvas.drawText(textobject)
+    draw_para(canvas, 'Ημερομηνία Γέννησης:<super>(2)</super>',
+              2.1 * cm, PAGE_HEIGHT - 11.8 * cm,
+              5 * cm, 1* cm,
+              font_name='Roboto-Bold',
+              font_size=9)
+    
+
     # Birth Date Value
     canvas.roundRect(7 * cm, PAGE_HEIGHT - 11.85 * cm,
                      12 * cm, 1 * cm, 0, stroke=1, fill=0)
