@@ -14,13 +14,29 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase.pdfmetrics import stringWidth
 
+from birthday_to_numeral import num_to_text_hundreds, num_to_text_thousands
 
 PAGE_WIDTH, PAGE_HEIGHT = A4
 
+MONTHS = [
+    "Ιανουαρίου",
+    "Φεβρουαρίου",
+    "Μαρτίου",
+    "Απριλίου",
+    "Μαΐου",
+    "Ιουνίου",
+    "Ιουλίου",
+    "Αυγούστου",
+    "Σεπτεμβρίου",
+    "Οκτωβρίου",
+    "Νοεμβρίου",
+    "Δεκεμβρίου"
+]
+
 pageinfo = "Υπεύθυνη Δήλωση"
 
-if(os.path.exists('/usr/share/fonts/truetype/roboto/hinted/'
-                  'Roboto-Regular.ttf')):
+if (os.path.exists('/usr/share/fonts/truetype/roboto/hinted/'
+                   'Roboto-Regular.ttf')):
     pdfmetrics.registerFont(TTFont(
         'Roboto-Regular', '/usr/share/fonts/truetype/roboto/hinted/'
         'Roboto-Regular.ttf'))
@@ -81,8 +97,10 @@ def make_first_page_hf(canvas, doc):
                      width=1.75 * cm,
                      height=1.75 * cm)
     # Subtitle
+    canvas.setLineWidth(0.5)
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 6.1 * cm,
                      17 * cm, 1.5 * cm, 4, stroke=1, fill=0)
+    canvas.setLineWidth(1)    
     # Frame Rectangle
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 15.85 * cm,
                      17 * cm, 9 * cm, 3, stroke=1, fill=0)
@@ -178,10 +196,16 @@ def make_first_page_hf(canvas, doc):
               font_size=9)
     
 
-    # Birth Date Value
+    # Birth Date val
     canvas.roundRect(7 * cm, PAGE_HEIGHT - 11.85 * cm,
                      12 * cm, 1 * cm, 0, stroke=1, fill=0)
-    draw_para(canvas, info['date_of_birth'],
+    year, month, day = (int (x) for x in info['date_of_birth'].split('-'))    
+    day_str = (num_to_text_hundreds(day, True).capitalise()
+               if day != 1 else "Πρώτη")
+    month_str = MONTHS[month-1]
+    year_str = num_to_text_thousands(year)
+    birthday_w = f'{day_str} {month_str} {year_str}'
+    draw_para(canvas, birthday_w,
                7.5 * cm, PAGE_HEIGHT - 11.80 * cm,
                11 * cm, 1 * cm)
     
@@ -220,7 +244,7 @@ def make_first_page_hf(canvas, doc):
     # Tel box
     canvas.roundRect(11.1 * cm, PAGE_HEIGHT - 13.85 * cm,
                      1.4 * cm, 1 * cm, 0, stroke=1, fill=0)
-    draw_para(canvas, 'Τηλ:',
+    draw_para(canvas, 'Τηλ.:',
               11.3 * cm, PAGE_HEIGHT - 13.8 * cm,
               3 * cm, 1 * cm,
               font_name='Roboto-Bold',
@@ -236,83 +260,93 @@ def make_first_page_hf(canvas, doc):
     # Residence box
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 14.85 * cm,
                      3 * cm, 1 * cm, 0, stroke=1, fill=0)
-    textobject = canvas.beginText()
-    textobject.setTextOrigin(2.1 * cm, PAGE_HEIGHT - 14.80 * cm)
-    textobject.setFont('Roboto-Bold', 9)
-    textobject.textLine(text='Τόπος Κατοικίας:')
-    canvas.drawText(textobject)
-    
-    # Residence Value
+    draw_para(canvas, 'Τόπος Κατοικίας:',
+              2.1 * cm, PAGE_HEIGHT - 14.8 * cm,
+              3 * cm, 1 * cm,
+              font_name='Roboto-Bold',
+              font_size=9)
+   
+    # Residence value
     canvas.roundRect(5 * cm, PAGE_HEIGHT - 14.85 * cm,
                      3.5 * cm, 1 * cm, 0, stroke=1, fill=0)
     draw_para(canvas, info['place_of_residence'],
                5.5 * cm, PAGE_HEIGHT - 14.80 * cm,
                2.5 * cm, 1 * cm)
-    # Street Box
+    
+    # Street box
     canvas.roundRect(8.5 * cm, PAGE_HEIGHT - 14.85 * cm,
                      1.7 * cm, 1 * cm, 0, stroke=1, fill=0)
-    textobject = canvas.beginText()
-    textobject.setTextOrigin(8.8 * cm, PAGE_HEIGHT - 14.80 * cm)
-    textobject.setFont('Roboto-Bold', 9)
-    textobject.textLine(text='Οδός:')
-    canvas.drawText(textobject)
+    draw_para(canvas, 'Οδός:',
+              8.8 * cm, PAGE_HEIGHT - 14.8 * cm,
+              3 * cm, 1 * cm,
+              font_name='Roboto-Bold',
+              font_size=9)
+    
     # Street Value
     canvas.roundRect(10.2 * cm, PAGE_HEIGHT - 14.85 * cm,
                      3.1 * cm, 1 * cm, 0, stroke=1, fill=0)
     draw_para(canvas, info['street'],
                10.7 * cm, PAGE_HEIGHT - 14.80 * cm,
                2.1 * cm, 1 * cm)
-    # Street Number Box
+
+    # Street Number box
     canvas.roundRect(13.3 * cm, PAGE_HEIGHT - 14.85 * cm,
                      1.5 * cm, 1 * cm, 0, stroke=1, fill=0)
-    textobject = canvas.beginText()
-    textobject.setTextOrigin(13.6 * cm, PAGE_HEIGHT - 14.80 * cm)
-    textobject.setFont('Roboto-Bold', 9)
-    textobject.textLine(text='Αριθ:')
-    canvas.drawText(textobject)
+    draw_para(canvas, 'Αριθ.:',
+              13.6 * cm, PAGE_HEIGHT - 14.8 * cm,
+              2 * cm, 1 * cm,
+              font_name='Roboto-Bold',
+              font_size=9)
+    
     # Street Number Value
     canvas.roundRect(14.8 * cm, PAGE_HEIGHT - 14.85 * cm,
                      1.1 * cm, 1 * cm, 0, stroke=1, fill=0)
     draw_para(canvas, info['street_number'],
                14.9 * cm, PAGE_HEIGHT - 14.80 * cm,
                0.9 * cm, 1 * cm)
-    # Postal Code Box
+
+    # Postal Code box
     canvas.roundRect(15.9 * cm, PAGE_HEIGHT - 14.85 * cm,
                      1.1 * cm, 1 * cm, 0, stroke=1, fill=0)
-    textobject = canvas.beginText()
-    textobject.setTextOrigin(16.2 * cm, PAGE_HEIGHT - 14.80 * cm)
-    textobject.setFont('Roboto-Bold', 9)
-    textobject.textLine(text='Τ.Κ:')
-    canvas.drawText(textobject)
+    draw_para(canvas, 'Τ.Κ.:',
+              16.1 * cm, PAGE_HEIGHT - 14.8 * cm,
+              2 * cm, 1 * cm,
+              font_name='Roboto-Bold',
+              font_size=9)
+    
     # Postal Code Value
     canvas.roundRect(17 * cm, PAGE_HEIGHT - 14.85 * cm,
                      2 * cm, 1 * cm, 0, stroke=1, fill=0)
     draw_para(canvas, info['postal_code'],
                17.5 * cm, PAGE_HEIGHT - 14.80 * cm,
                1 * cm, 1 * cm)
-    # TAX ID Box
+
+    # ΤΙΝ box
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 15.85 * cm,
                      4.5 * cm, 1 * cm, 0, stroke=1, fill=0)
-    textobject = canvas.beginText()
-    textobject.setTextOrigin(3.5 * cm, PAGE_HEIGHT - 15.80 * cm)
-    textobject.setFont('Roboto-Bold', 9)
-    textobject.textLine(text='Α.Φ.Μ:')
-    canvas.drawText(textobject)
-    # TAX ID Value
+    draw_para(canvas, 'Α.Φ.Μ.:',
+              3.5 * cm, PAGE_HEIGHT - 15.8 * cm,
+              3 * cm, 1 * cm,
+              font_name='Roboto-Bold',
+              font_size=9)
+    
+    # TIN Value
     canvas.roundRect(6.5 * cm, PAGE_HEIGHT - 15.85 * cm,
                      4 * cm, 1 * cm, 0, stroke=1, fill=0)
     draw_para(canvas, info['tax_id'],
                7 * cm, PAGE_HEIGHT - 15.80 * cm,
                3 * cm, 1 * cm)
-    # EMAIL Box
+    
+    # email box
     canvas.roundRect(10.5 * cm, PAGE_HEIGHT - 15.85 * cm,
                      2.5 * cm, 1 * cm, 0, stroke=1, fill=0)
-    textobject = canvas.beginText()
-    textobject.setTextOrigin(11.3 * cm, PAGE_HEIGHT - 15.80 * cm)
-    textobject.setFont('Roboto-Bold', 9)
-    textobject.textLine(text='E-mail:')
-    canvas.drawText(textobject)
-    # EMAIL Value
+    draw_para(canvas, 'Ηλ. Ταχ.:',
+              11.15 * cm, PAGE_HEIGHT - 15.8 * cm,
+              5 * cm, 1 * cm,
+              font_name='Roboto-Bold',
+              font_size=9)
+
+    # email value
     canvas.roundRect(13 * cm, PAGE_HEIGHT - 15.85 * cm,
                      6 * cm, 1 * cm, 0, stroke=1, fill=0)
     textobject = canvas.beginText()
@@ -323,8 +357,6 @@ def make_first_page_hf(canvas, doc):
     canvas.drawText(textobject)
     
     # Preamble text
-    # canvas.roundRect(2 * cm, PAGE_HEIGHT - 18 * cm, 17 * cm,
-    #                  1 * cm, 2, stroke=1, fill=0)
     draw_para(canvas, PREAMBLE,
                2.2 * cm, PAGE_HEIGHT - 17.40 * cm,
                16 * cm, 2 * cm)
@@ -391,16 +423,30 @@ def make_intro(elements, contents):
     elements.append(Paragraph(contents, styles["Warning"]))
 
 
+def make_human_signature(elements):
+    signature = [
+        [
+            Spacer(0*cm, 17*cm),
+            Paragraph('Ο/Η Δηλ.', styles['NameSignature'])
+        ],
+        [
+            Spacer(0*cm, 1*cm),
+            Paragraph(f'{info["name"]} {info["surname"]}',
+                      styles['NameSignature'])
+        ]        
+    ]
+    
+    signature = Table(signature)
+
+    elements.append(signature)
+
+
 def make_signature(elements):
     signature = [
         [Spacer(5, 10), Paragraph(
-            'Ο/Η Δηλ.', styles['DilosiSignature'])],
-        [Spacer(5, 10), Paragraph('%s %s' % (info['name'], info['surname']),
-                                  styles['DilosiSignature'])],
+            '7 Νοεμβρίου 2019, 20:13', styles['NameSignature'])],
         [Spacer(5, 10), Paragraph(
-            '15 Οκτωβρίου 2019, 15:30', styles['DilosiSignature'])],
-        [Spacer(5, 10), Paragraph(
-            'Κωδικός: 123456ΑΣ123459998', styles['DilosiSignature'])],
+            'Κωδικός: 123456AK123459998', styles['NameSignature'])],
     ]
 
     signature = [
@@ -434,10 +480,10 @@ styles.add(ParagraphStyle(name='DilosiHeading',
                           alignment=TA_CENTER,
                           spaceAfter=5))
 
-styles.add(ParagraphStyle(name='DilosiSignature',
+styles.add(ParagraphStyle(name='NameSignature',
                           fontName='Roboto-Regular',
                           fontSize=12,
-                          alignment=TA_RIGHT))
+                          alignment=TA_CENTER))
 info = load_results('data.json')
 
 title = 'Υπεύθυνη Δήλωση'
@@ -469,6 +515,7 @@ make_heading(elements, [title])
 make_heading(elements, [article])
 elements.append(Spacer(1, 12))
 make_intro(elements, WARNING)
+make_human_signature(elements)
 elements.append(PageBreak())
 make_signature(elements)
 
