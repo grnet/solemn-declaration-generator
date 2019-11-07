@@ -62,11 +62,11 @@ def draw_field(canvas, contents, origin_x, origin_y, width, height):
 
 def make_first_page_hf(canvas, doc):
     canvas.saveState()
-    canvas.drawImage('logo.jpg',
-                     x=PAGE_WIDTH - 12 * cm,
+    canvas.drawImage('coat_of_arms_of_greece.png',
+                     x=PAGE_WIDTH - 11.5 * cm,
                      y=PAGE_HEIGHT - 2.7 * cm,
-                     width=PAGE_WIDTH / 8,
-                     height=2.5 * cm)
+                     width=1.75 * cm,
+                     height=1.75 * cm)
     # Subtitle
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 6.1 * cm,
                      17 * cm, 1.5 * cm, 4, stroke=1, fill=0)
