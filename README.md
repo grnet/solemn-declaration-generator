@@ -1,11 +1,17 @@
 This program generates automatically digital Greek Government solemn declarations.
 
 # Configure
-To parse your data into the file edit `data.json` with your personal data
 
-# Run
-To run it:
+The contents of the form are read from `data.json`. See the provided
+example.
 
-* Install `ReportLab` with `pip3 install reportlab`
-* Enter `python3 generate_declaration.py`
- 
+# Requirements
+
+
+* [ReportLab](https://www.reportlab.com/opensource/)
+
+* [Cryptography](https://cryptography.io/en/latest/)
+
+* [qrcode](https://github.com/lincolnloop/python-qrcode)
+
+* [endesive](https://github.com/m32/endesive/)
