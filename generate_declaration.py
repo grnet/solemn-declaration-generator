@@ -19,19 +19,32 @@ import argparse
 PAGE_WIDTH, PAGE_HEIGHT = A4
 
 MONTHS = [
-    "Ιανουαρίου",
-    "Φεβρουαρίου",
-    "Μαρτίου",
-    "Απριλίου",
-    "Μαΐου",
-    "Ιουνίου",
-    "Ιουλίου",
-    "Αυγούστου",
-    "Σεπτεμβρίου",
-    "Οκτωβρίου",
-    "Νοεμβρίου",
-    "Δεκεμβρίου"
+    'Ιανουαρίου',
+    'Φεβρουαρίου',
+    'Μαρτίου',
+    'Απριλίου',
+    'Μαΐου',
+    'Ιουνίου',
+    'Ιουλίου',
+    'Αυγούστου',
+    'Σεπτεμβρίου',
+    'Οκτωβρίου',
+    'Νοεμβρίου',
+    'Δεκεμβρίου'
 ]
+
+GENDER_ARTICLE = {
+    'm' : 'Ο',
+    'f' : 'Η',
+    'n' : 'Το'
+}
+
+GENDER_BYLINE = {
+    'm' : 'Ο Δηλών',
+    'f' : 'Η Δηλούσα',
+    'n' : 'Το Δηλών'
+}
+
 
 TITLE = 'Υπεύθυνη Δήλωση'
 LAW = '(άρθρο 8 Ν.1599/1986)'
@@ -67,13 +80,13 @@ STYLES.add(ParagraphStyle(name='Warning',
                           leading=16,
                           alignment=TA_CENTER))
 
-STYLES.add(ParagraphStyle(name='DilosiBold',
+STYLES.add(ParagraphStyle(name='DeclBold',
                           fontName='Roboto-Bold',
                           fontSize=9,
                           leading=16,
                           alignment=TA_JUSTIFY))
 
-STYLES.add(ParagraphStyle(name='DilosiHeading',
+STYLES.add(ParagraphStyle(name='DeclHeading',
                           fontName='Roboto-Bold',
                           fontSize=16,
                           alignment=TA_CENTER,
@@ -81,7 +94,7 @@ STYLES.add(ParagraphStyle(name='DilosiHeading',
 
 STYLES.add(ParagraphStyle(name='NameSignature',
                           fontName='Roboto-Regular',
-                          fontSize=12,
+                          fontSize=10,
                           alignment=TA_CENTER))
 
 
@@ -169,7 +182,7 @@ def make_first_page(canvas, doc, payload):
     # Name box
     canvas.roundRect(2 * cm, PAGE_HEIGHT - 8.85 * cm,
                      2.5 * cm, 1 * cm, 0, stroke=1, fill=0)
-    draw_para(canvas, 'Ο - Η Όνομα:',
+    draw_para(canvas, f'{GENDER_ARTICLE[payload["gender"]]} Όνομα:',
               2.1 * cm, PAGE_HEIGHT - 8.85 * cm,
               2.5 * cm, 1* cm,
               font_name='Roboto-Bold',
@@ -440,7 +453,7 @@ def make_later_pages(canvas, doc):
 
 def make_heading(element, contents):
     for pcontent in contents:
-        elements.append(Paragraph(pcontent, STYLES["DilosiHeading"]))
+        elements.append(Paragraph(pcontent, STYLES["DeclHeading"]))
 
 
 def make_intro(elements, contents):
@@ -452,7 +465,8 @@ def make_human_signature(elements, payload):
     signature = [
         [
             Spacer(0*cm, 17*cm),
-            Paragraph('Ο/Η Δηλ.', STYLES['NameSignature'])
+            Paragraph(GENDER_BYLINE[payload['gender']],
+                      STYLES['NameSignature'])
         ],
         [
             Spacer(0*cm, 1*cm),
