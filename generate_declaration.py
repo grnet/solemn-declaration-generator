@@ -23,7 +23,7 @@ from endesive import pdf as endesivepdf
 import datetime
 import argparse
 import os.path
-import io
+import uuid
 
 import qrcode
 
@@ -165,6 +165,7 @@ def make_first_page(canvas, doc, payload):
     canvas.saveState()
 
     digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
+    payload['uuid'] = uuid.uuid4().hex
     digest.update(json.dumps(payload).encode('utf-8'))
     digest_hex = digest.finalize().hex()
 
