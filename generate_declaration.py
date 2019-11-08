@@ -16,7 +16,7 @@ from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
-from endesive import pdf as endesivepdf
+# from endesive import pdf as endesivepdf
 
 import datetime
 import argparse
@@ -173,8 +173,8 @@ def make_first_page(canvas, doc, payload):
     # QR code
     qr = qrcode.make(digest_hex)
     canvas.drawInlineImage(qr,
-                           x=2 * cm,
-                           y=PAGE_HEIGHT - 3.25 * cm,
+                           x=PAGE_WIDTH - 5 * cm,
+                           y=PAGE_HEIGHT - 3.5 * cm,
                            width=2.5 * cm,
                            height=2.5 * cm)
 
