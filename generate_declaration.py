@@ -4,8 +4,8 @@ import os.path
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Table, Paragraph, Frame
-from reportlab.platypus import Spacer, Image
-from reportlab.platypus import PageBreak
+from reportlab.platypus import Spacer
+from reportlab.platypus.flowables import Image
 from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER, TA_RIGHT
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.pdfbase import pdfmetrics
@@ -14,7 +14,18 @@ from reportlab.pdfbase.pdfmetrics import stringWidth
 
 from birthday_to_numeral import num_to_text_hundreds, num_to_text_thousands
 
+from  cryptography import x509
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.serialization import load_pem_private_key
+from endesive import pdf as endesivepdf
+
+import datetime
 import argparse
+import os.path
+import io
+
+import qrcode
 
 PAGE_WIDTH, PAGE_HEIGHT = A4
 
@@ -72,6 +83,8 @@ SANCTIONS_FN = ('(3) Γνωρίζω ότι: Όποιος εν γνώσει το�
                 'κάθειρξη μέχρι 10 ετών.')
 
 PAGE_DESCR = "Υπεύθυνη Δήλωση"
+
+DEFAULT_OUTPUT_FILE = 'solemn_declaration.pdf'
 
 STYLES = getSampleStyleSheet()
 STYLES.add(ParagraphStyle(name='Warning',
@@ -148,7 +161,28 @@ def draw_para(canvas, contents, origin_x, origin_y, width, height,
     paragraph.drawOn(canvas, origin_x, origin_y)    
 
 def make_first_page(canvas, doc, payload):
+    
     canvas.saveState()
+
+    digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
+    digest.update(json.dumps(payload).encode('utf-8'))
+    digest_hex = digest.finalize().hex()
+
+    # QR code
+    qr = qrcode.make(digest_hex)
+    canvas.drawInlineImage(qr,
+                           x=2*cm,
+                           y=PAGE_HEIGHT - 3.25 * cm,
+                           width=2.5 * cm,
+                           height=2.5 * cm)                
+
+    draw_para(canvas, f'Κωδικός: {digest_hex}',
+              0.5*cm, PAGE_HEIGHT - 0.75 * cm,
+              15 * cm, 0.5 * cm,
+              font_name='Roboto-Regular',
+              font_size=9)
+    
+    # Coat of arms
     canvas.drawImage('coat_of_arms_of_greece.png',
                      x=PAGE_WIDTH - PAGE_WIDTH/2 - 1.75 * cm / 2,
                      y=PAGE_HEIGHT - 2.7 * cm,
@@ -257,7 +291,7 @@ def make_first_page(canvas, doc, payload):
     # Birth Date val
     canvas.roundRect(7 * cm, PAGE_HEIGHT - 11.85 * cm,
                      12 * cm, 1 * cm, 0, stroke=1, fill=0)
-    year, month, day = (int (x) for x in payload['date_of_birth'].split('-'))    
+    year, month, day = (int (x) for x in payload['date_of_birth'].split('-'))
     day_str = (num_to_text_hundreds(day, True).capitalise()
                if day != 1 else "Πρώτη")
     month_str = MONTHS[month-1]
@@ -465,6 +499,10 @@ def make_human_signature(elements, payload):
     signature = [
         [
             Spacer(0*cm, 17*cm),
+            Paragraph(payload['date'], STYLES['NameSignature'])
+        ],        
+        [
+            Spacer(0*cm, 0*cm),
             Paragraph(GENDER_BYLINE[payload['gender']],
                       STYLES['NameSignature'])
         ],
@@ -480,26 +518,60 @@ def make_human_signature(elements, payload):
     elements.append(signature)
 
 
-def make_signature(elements):
-    signature = [
-        [Spacer(5, 10), Paragraph(
-            '7 Νοεμβρίου 2019, 20:13', STYLES['NameSignature'])],
-        [Spacer(5, 10), Paragraph(
-            'Κωδικός: 123456AK123459998', STYLES['NameSignature'])],
-    ]
+def crypto_sign(certificate_filename, key_filename, pdf_filename):
+    
+    with open(certificate_filename, 'rb') as cert_in:
+        cert_data = cert_in.read()
+    cert = x509.load_pem_x509_certificate(cert_data, default_backend())   
 
-    signature = [
-        [Image('qr.png', 95, 95, hAlign='LEFT'), signature]
-    ]
+    with open(key_filename, 'rb') as key_in:
+        key_data = key_in.read()
+    cert_key = load_pem_private_key(key_data,
+                                    None,
+                                    default_backend())
+    with open(pdf_filename, 'rb') as decl_file:
+        decl_pdf = decl_file.read()
 
-    signature = Table(signature)
-    elements.append(signature)
+    timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S+02'00'")
+
+    dct = {
+        b'sigflags': 3,
+        b'sigpage': 0,
+        b'sigbutton': True,
+        b'contact': b'support@grnet.gr',
+        b'location': b'Athens',
+        b'signingdate': timestamp.encode('utf-8'),
+        b'reason': b'GRNET Signing Service',
+        b'signature': f'Verified by GRNET S.A. {timestamp}'.encode('utf-8'),
+        b'signaturebox': (450, 0, 600, 100),
+    }
+    
+    decl_signed = endesivepdf.cms.sign(decl_pdf,
+                                       dct,
+                                       cert_key,
+                                       cert,
+                                       [],
+                                       'sha256'
+    )
+
+    filename, file_extension = os.path.splitext(pdf_filename)    
+    signed_pdf_filename = f'{filename}-signed{file_extension}'
+    with open(signed_pdf_filename, 'wb') as decl_signed_file:
+        decl_signed_file.write(decl_pdf)
+        decl_signed_file.write(decl_signed)
 
 
 if __name__ == "__main__":
 
-
-    doc = SimpleDocTemplate("solemn_declaration.pdf", pagesize=A4)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-o', '--output',
+                        help='PDF output file',
+                        default=DEFAULT_OUTPUT_FILE)
+    parser.add_argument('-c', '--certificate', help='certificate file')
+    parser.add_argument('-k', '--key', help='certificate private key file')
+    args = parser.parse_args()
+    
+    doc = SimpleDocTemplate(args.output, pagesize=A4)
 
     elements = []
 
@@ -510,12 +582,17 @@ if __name__ == "__main__":
     elements.append(Spacer(1, 12))
     make_intro(elements, WARNING)
     make_human_signature(elements, payload)
-    elements.append(PageBreak())
-    make_signature(elements)
 
     make_first_page_ld = lambda canvas, doc: make_first_page(canvas, doc,
                                                              payload)
 
-    doc.build(elements,
-              onFirstPage=make_first_page_ld,
-              onLaterPages=make_later_pages)
+    decl = doc.build(elements,
+                     onFirstPage=make_first_page_ld,
+                     onLaterPages=make_later_pages)
+
+
+    if args.certificate and args.key:
+        crypto_sign(args.certificate, args.key, args.output)
+
+    
+        
