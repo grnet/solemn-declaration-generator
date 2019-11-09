@@ -15,7 +15,9 @@ from birthday_to_numeral import num_to_text_hundreds, num_to_text_thousands
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.serialization.pkcs12 import load_key_and_certificates
+from cryptography.hazmat.primitives.serialization.pkcs12 import (
+    load_key_and_certificates
+)
 from endesive import pdf as endesivepdf
 
 import datetime
@@ -539,7 +541,8 @@ def crypto_sign(certificate_filename, password, pdf_filename):
 
     with open(certificate_filename, 'rb') as cert_in:
         cert_data = cert_in.read()
-    cert = load_key_and_certificates(cert_data, password.encode('utf-8'), backend)
+    cert = load_key_and_certificates(cert_data, password.encode('utf-8'), 
+                                     backend)
 
     with open(pdf_filename, 'rb') as decl_file:
         decl_pdf = decl_file.read()
