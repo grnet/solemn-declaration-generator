@@ -578,13 +578,14 @@ def crypto_sign(certificate_filename, password, pdf_filename):
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-o', '--output',
                         help='PDF output file',
                         default=DEFAULT_OUTPUT_FILE)
     parser.add_argument('-c', '--certificate', help='certificate file')
     parser.add_argument('-p', '--password', help='certificate password',
-                        default="")
+                        default=None)
     parser.add_argument('-q', '--qr_code', 
                         action='store_true',
                         help='embed reference and QR code')
