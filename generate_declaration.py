@@ -15,7 +15,7 @@ from birthday_to_numeral import num_to_text_hundreds, num_to_text_thousands
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.serialization import load_pem_private_key
+from cryptography.hazmat.primitives.serialization.pkcs12 import load_key_and_certificates
 from endesive import pdf as endesivepdf
 
 import datetime
@@ -42,15 +42,17 @@ MONTHS = [
 ]
 
 GENDER_ARTICLE = {
-    'm': 'Ο',
-    'f': 'Η',
-    'n': 'Το'
+    'm' : 'Ο',
+    'f' : 'Η',
+    'n' : 'Το',
+    'mf' : 'Ο - Η'
 }
 
 GENDER_BYLINE = {
     'm' : 'Ο Δηλών',
     'f' : 'Η Δηλούσα',
-    'n' : 'Το Δηλούν'
+    'n' : 'Το Δηλούν',
+    'mf' : 'Ο - Η Δηλ.'
 }
 
 
@@ -161,7 +163,7 @@ def draw_para(canvas, contents, origin_x, origin_y, width, height,
     paragraph.drawOn(canvas, origin_x, origin_y)
 
 
-def make_first_page(canvas, doc, payload):
+def make_first_page(canvas, doc, qr, payload):
 
     canvas.saveState()
 
@@ -169,20 +171,22 @@ def make_first_page(canvas, doc, payload):
     payload['uuid'] = uuid.uuid4().hex
     digest.update(json.dumps(payload).encode('utf-8'))
     digest_hex = digest.finalize().hex()
+    payload['digest'] = digest_hex
 
-    # QR code
-    qr = qrcode.make(digest_hex)
-    canvas.drawInlineImage(qr,
-                           x=PAGE_WIDTH - 5 * cm,
-                           y=PAGE_HEIGHT - 3.5 * cm,
-                           width=2.5 * cm,
-                           height=2.5 * cm)
+    if args.qr_code:
+        # QR code
+        qr = qrcode.make(digest_hex)
+        canvas.drawInlineImage(qr,
+                            x=PAGE_WIDTH - 5 * cm,
+                            y=PAGE_HEIGHT - 3.5 * cm,
+                            width=2.5 * cm,
+                            height=2.5 * cm)
 
-    draw_para(canvas, f'Κωδικός: {digest_hex}',
-              0.5 * cm, PAGE_HEIGHT - 0.75 * cm,
-              15 * cm, 0.5 * cm,
-              font_name='Roboto-Regular',
-              font_size=9)
+        draw_para(canvas, f'Κωδικός: {digest_hex}',
+                0.5 * cm, PAGE_HEIGHT - 0.75 * cm,
+                15 * cm, 0.5 * cm,
+                font_name='Roboto-Regular',
+                font_size=9)
 
     # Coat of arms
     canvas.drawImage('coat_of_arms_of_greece.png',
@@ -518,17 +522,14 @@ def make_human_signature(elements, payload):
     elements.append(signature)
 
 
-def crypto_sign(certificate_filename, key_filename, pdf_filename):
+def crypto_sign(certificate_filename, password, pdf_filename):
+
+    backend = default_backend()
 
     with open(certificate_filename, 'rb') as cert_in:
         cert_data = cert_in.read()
-    cert = x509.load_pem_x509_certificate(cert_data, default_backend())
+    cert = load_key_and_certificates(cert_data, password.encode('utf-8'), backend)
 
-    with open(key_filename, 'rb') as key_in:
-        key_data = key_in.read()
-    cert_key = load_pem_private_key(key_data,
-                                    None,
-                                    default_backend())
     with open(pdf_filename, 'rb') as decl_file:
         decl_pdf = decl_file.read()
 
@@ -548,9 +549,9 @@ def crypto_sign(certificate_filename, key_filename, pdf_filename):
 
     decl_signed = endesivepdf.cms.sign(decl_pdf,
                                        dct,
-                                       cert_key,
-                                       cert,
-                                       [],
+                                       cert[0],
+                                       cert[1],
+                                       cert[2],
                                        'sha256'
                                        )
 
@@ -568,7 +569,11 @@ if __name__ == "__main__":
                         help='PDF output file',
                         default=DEFAULT_OUTPUT_FILE)
     parser.add_argument('-c', '--certificate', help='certificate file')
-    parser.add_argument('-k', '--key', help='certificate private key file')
+    parser.add_argument('-p', '--password', help='certificate password',
+                        default="")
+    parser.add_argument('-q', '--qr_code', 
+                        action='store_true',
+                        help='embed reference and QR code')
     args = parser.parse_args()
 
     doc = SimpleDocTemplate(args.output, pagesize=A4)
@@ -576,6 +581,8 @@ if __name__ == "__main__":
     elements = []
 
     payload = load_payload('data.json')
+    if 'gender' not in payload:
+        payload['gender'] = 'mf'
 
     make_heading(elements, [TITLE])
     make_heading(elements, [LAW])
@@ -584,11 +591,13 @@ if __name__ == "__main__":
     make_human_signature(elements, payload)
 
     def make_first_page_ld(canvas, doc): return make_first_page(canvas, doc,
+                                                                args.qr_code,
                                                                 payload)
 
     decl = doc.build(elements,
                      onFirstPage=make_first_page_ld,
                      onLaterPages=make_later_pages)
 
-    if args.certificate and args.key:
-        crypto_sign(args.certificate, args.key, args.output)
+    if args.certificate and args.password:
+        crypto_sign(args.certificate, args.password, args.output)
+    print(payload['digest'])
