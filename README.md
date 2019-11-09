@@ -24,7 +24,8 @@ declarations:
 * It reads the form data from a JSON file and produces a filled 
   PDF form. 
 
-* It can sign the form it generates if provided a valid P12 certificate.
+* It can sign the form it generates if provided a valid 
+  [PKCS #12 certificate](https://en.wikipedia.org/wiki/PKCS_12).
 
 * It can generate a unique code and embed it in the PDF; this code could
   be used to cross-reference and verify a signature by some service.
