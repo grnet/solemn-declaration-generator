@@ -88,55 +88,53 @@ PAGE_DESCR = "Υπεύθυνη Δήλωση"
 DEFAULT_OUTPUT_FILE = 'solemn_declaration.pdf'
 
 STYLES = getSampleStyleSheet()
-STYLES.add(ParagraphStyle(name='Warning',
-                          fontName='Roboto-Regular',
-                          fontSize=8,
-                          leading=16,
-                          alignment=TA_CENTER))
 
-STYLES.add(ParagraphStyle(name='DeclBold',
-                          fontName='Roboto-Bold',
-                          fontSize=9,
-                          leading=16,
-                          alignment=TA_JUSTIFY))
+def setup(config_filename, styles):
+    
+    with open(config_filename, 'r') as config_file:
+        config_data = json.load(config_file)
+    
+    for path_font_regular, path_font_bold in zip(config_data['font-regular'],
+                                                 config_data['font-bold']):
+        if os.path.exists(path_font_regular) and os.path.exists(path_font_bold):
+            pdfmetrics.registerFont(TTFont('Font-Regular', path_font_regular))
+            pdfmetrics.registerFont(TTFont('Font-Bold', path_font_bold))
+            break
+                       
+    styles.add(ParagraphStyle(name='Warning',
+                            fontName='Font-Regular',
+                            fontSize=8,
+                            leading=16,
+                            alignment=TA_CENTER))
 
-STYLES.add(ParagraphStyle(name='DeclHeading',
-                          fontName='Roboto-Bold',
-                          fontSize=16,
-                          alignment=TA_CENTER,
-                          spaceAfter=5))
+    styles.add(ParagraphStyle(name='DeclBold',
+                            fontName='Font-Bold',
+                            fontSize=9,
+                            leading=16,
+                            alignment=TA_JUSTIFY))
 
-STYLES.add(ParagraphStyle(name='DeclSubHeading',
-                          fontName='Roboto-Bold',
-                          fontSize=9,
-                          alignment=TA_CENTER,
-                          spaceAfter=5))
+    styles.add(ParagraphStyle(name='DeclHeading',
+                            fontName='Font-Bold',
+                            fontSize=16,
+                            alignment=TA_CENTER,
+                            spaceAfter=5))
 
-STYLES.add(ParagraphStyle(name='NameSignature',
-                          fontName='Roboto-Regular',
-                          fontSize=10,
-                          alignment=TA_CENTER))
+    styles.add(ParagraphStyle(name='DeclSubHeading',
+                            fontName='Font-Bold',
+                            fontSize=9,
+                            alignment=TA_CENTER,
+                            spaceAfter=5))
 
-
-if (os.path.exists('/usr/share/fonts/truetype/roboto/hinted/'
-                   'Roboto-Regular.ttf')):
-    pdfmetrics.registerFont(TTFont(
-        'Roboto-Regular', '/usr/share/fonts/truetype/roboto/hinted/'
-        'Roboto-Regular.ttf'))
-    pdfmetrics.registerFont(TTFont(
-        'Roboto-Bold', '/usr/share/fonts/truetype/roboto/hinted/'
-        'Roboto-Bold.ttf'))
-else:
-    pdfmetrics.registerFont(TTFont(
-        'Roboto-Regular', '/System/Library/Fonts/Supplemental/Arial.ttf'))
-    pdfmetrics.registerFont(TTFont(
-        'Roboto-Bold', '/System/Library/Fonts/Supplemental/Arial Bold.ttf'))
+    styles.add(ParagraphStyle(name='NameSignature',
+                            fontName='Font-Regular',
+                            fontSize=10,
+                            alignment=TA_CENTER))
 
 
-def load_payload(filename):
-    with open(filename, 'r') as jsonfile:
-        jsondata = json.load(jsonfile)
-    return jsondata
+def load_payload(payload_filename):
+    with open(payload_filename, 'r') as json_file:
+        json_data = json.load(json_file)
+    return json_data
 
 
 def shrink_to_fit(paragraph, style, assigned_width, assigned_height):
@@ -151,7 +149,7 @@ def shrink_to_fit(paragraph, style, assigned_width, assigned_height):
 
 
 def create_para(contents, width, height,
-                font_name='Roboto-Regular',
+                font_name='Font-Regular',
                 font_size=10):
     style = ParagraphStyle('default',
                            fontName=font_name,
@@ -162,7 +160,7 @@ def create_para(contents, width, height,
 
 
 def draw_para(canvas, contents, origin_x, origin_y, width, height,
-              font_name='Roboto-Regular',
+              font_name='Font-Regular',
               font_size=10):
     paragraph = create_para(contents,
                             width, height,
@@ -193,7 +191,7 @@ def make_first_page(canvas, doc, qr, payload):
         draw_para(canvas, f'Κωδικός: {digest_hex}',
                 0.5 * cm, PAGE_HEIGHT - 0.75 * cm,
                 15 * cm, 0.5 * cm,
-                font_name='Roboto-Regular',
+                font_name='Font-Regular',
                 font_size=9)
 
     # Coat of arms
@@ -217,7 +215,7 @@ def make_first_page(canvas, doc, qr, payload):
     draw_para(canvas, 'Προς:<super>(1)</super>',
               2.1 * cm, PAGE_HEIGHT - 7.8 * cm,
               2.5 * cm, 1 * cm,
-              font_name='Roboto-Bold',
+              font_name='Font-Bold',
               font_size=9)
 
     # Recipient value
@@ -233,7 +231,7 @@ def make_first_page(canvas, doc, qr, payload):
     draw_para(canvas, f'{GENDER_ARTICLE[payload["gender"]]} Όνομα:',
               2.1 * cm, PAGE_HEIGHT - 8.85 * cm,
               2.5 * cm, 1 * cm,
-              font_name='Roboto-Bold',
+              font_name='Font-Bold',
               font_size=9)
 
     # Name value
@@ -249,7 +247,7 @@ def make_first_page(canvas, doc, qr, payload):
     draw_para(canvas, 'Επώνυμο:',
               11 * cm, PAGE_HEIGHT - 8.85 * cm,
               2.5 * cm, 1 * cm,
-              font_name='Roboto-Bold',
+              font_name='Font-Bold',
               font_size=9)
 
     # Surname value
@@ -265,7 +263,7 @@ def make_first_page(canvas, doc, qr, payload):
     draw_para(canvas, 'Όνομα και Επώνυμο Πατέρα:',
               2.1 * cm, PAGE_HEIGHT - 9.80 * cm,
               5 * cm, 1 * cm,
-              font_name='Roboto-Bold',
+              font_name='Font-Bold',
               font_size=9)
 
     # Father's name value
@@ -281,7 +279,7 @@ def make_first_page(canvas, doc, qr, payload):
     draw_para(canvas, 'Όνομα και Επώνυμο Μητέρας:',
               2.1 * cm, PAGE_HEIGHT - 10.80 * cm,
               5 * cm, 1 * cm,
-              font_name='Roboto-Bold',
+              font_name='Font-Bold',
               font_size=9)
 
     # Mother's name value
@@ -297,7 +295,7 @@ def make_first_page(canvas, doc, qr, payload):
     draw_para(canvas, 'Ημερομηνία Γέννησης:<super>(2)</super>',
               2.1 * cm, PAGE_HEIGHT - 11.8 * cm,
               5 * cm, 1 * cm,
-              font_name='Roboto-Bold',
+              font_name='Font-Bold',
               font_size=9)
 
     # Birth Date val
@@ -319,7 +317,7 @@ def make_first_page(canvas, doc, qr, payload):
     draw_para(canvas, 'Τόπος Γέννησης:',
               2.1 * cm, PAGE_HEIGHT - 12.8 * cm,
               11 * cm, 1 * cm,
-              font_name='Roboto-Bold',
+              font_name='Font-Bold',
               font_size=9)
 
     # Birthplace value
@@ -335,7 +333,7 @@ def make_first_page(canvas, doc, qr, payload):
     draw_para(canvas, 'Αριθμός Δελτίου Ταυτότητας:',
               2.1 * cm, PAGE_HEIGHT - 13.8 * cm,
               11 * cm, 1 * cm,
-              font_name='Roboto-Bold',
+              font_name='Font-Bold',
               font_size=9)
 
     # ID value
@@ -351,7 +349,7 @@ def make_first_page(canvas, doc, qr, payload):
     draw_para(canvas, 'Τηλ.:',
               11.3 * cm, PAGE_HEIGHT - 13.8 * cm,
               3 * cm, 1 * cm,
-              font_name='Roboto-Bold',
+              font_name='Font-Bold',
               font_size=9)
 
     # Tel value
@@ -367,7 +365,7 @@ def make_first_page(canvas, doc, qr, payload):
     draw_para(canvas, 'Τόπος Κατοικίας:',
               2.1 * cm, PAGE_HEIGHT - 14.8 * cm,
               3 * cm, 1 * cm,
-              font_name='Roboto-Bold',
+              font_name='Font-Bold',
               font_size=9)
 
     # Residence value
@@ -383,7 +381,7 @@ def make_first_page(canvas, doc, qr, payload):
     draw_para(canvas, 'Οδός:',
               8.8 * cm, PAGE_HEIGHT - 14.8 * cm,
               3 * cm, 1 * cm,
-              font_name='Roboto-Bold',
+              font_name='Font-Bold',
               font_size=9)
 
     # Street Value
@@ -399,7 +397,7 @@ def make_first_page(canvas, doc, qr, payload):
     draw_para(canvas, 'Αριθ.:',
               13.6 * cm, PAGE_HEIGHT - 14.8 * cm,
               2 * cm, 1 * cm,
-              font_name='Roboto-Bold',
+              font_name='Font-Bold',
               font_size=9)
 
     # Street Number Value
@@ -415,7 +413,7 @@ def make_first_page(canvas, doc, qr, payload):
     draw_para(canvas, 'Τ.Κ.:',
               16.1 * cm, PAGE_HEIGHT - 14.8 * cm,
               2 * cm, 1 * cm,
-              font_name='Roboto-Bold',
+              font_name='Font-Bold',
               font_size=9)
 
     # Postal Code Value
@@ -431,7 +429,7 @@ def make_first_page(canvas, doc, qr, payload):
     draw_para(canvas, 'Α.Φ.Μ.:',
               3.5 * cm, PAGE_HEIGHT - 15.8 * cm,
               3 * cm, 1 * cm,
-              font_name='Roboto-Bold',
+              font_name='Font-Bold',
               font_size=9)
 
     # TIN Value
@@ -447,7 +445,7 @@ def make_first_page(canvas, doc, qr, payload):
     draw_para(canvas, 'Ηλ. Ταχ.:',
               11.15 * cm, PAGE_HEIGHT - 15.8 * cm,
               5 * cm, 1 * cm,
-              font_name='Roboto-Bold',
+              font_name='Font-Bold',
               font_size=9)
 
     # email value
@@ -491,7 +489,7 @@ def make_first_page(canvas, doc, qr, payload):
 
 def make_later_pages(canvas, doc):
     canvas.saveState()
-    canvas.setFont('Roboto-Regular', 9)
+    canvas.setFont('Font-Regular', 9)
     canvas.drawString(PAGE_WIDTH - 7 * cm, PAGE_HEIGHT - 2 * cm,
                       "%s %d" % (PAGE_DESCR, doc.page))
     canvas.restoreState()
@@ -589,7 +587,12 @@ if __name__ == "__main__":
     parser.add_argument('-q', '--qr_code', 
                         action='store_true',
                         help='embed reference and QR code')
+    parser.add_argument('-s', '--setup',
+                        default='setup.json',
+                        help='setup configuration file')
     args = parser.parse_args()
+
+    setup(args.setup, STYLES)
 
     doc = SimpleDocTemplate(args.output, pagesize=A4)
 

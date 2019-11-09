@@ -34,7 +34,7 @@ declarations:
 
 ```
 generate_declaration.py [-h] [-o OUTPUT] [-c CERTIFICATE] [-p PASSWORD]
-                               [-q]
+                               [-q] [-s SETUP]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -45,6 +45,8 @@ optional arguments:
   -p PASSWORD, --password PASSWORD
                         certificate password (default: None)
   -q, --qr_code         embed reference and QR code (default: False)
+  -s SETUP, --setup SETUP
+                        setup configuration file (default: setup.json)
   ```
 
 If `-c` and `-p` are given, the basename of the signed document is 
@@ -54,7 +56,7 @@ given by the user.
 When it finishes the program outputs a reference code (the same one that
 is embedded in the document if run with `-q`).
 
-## Examples.
+## Examples
 
 * [solemn_declaration.pdf](solemn_declaration.pdf): an example PDF solemn
   declaration.
@@ -62,10 +64,16 @@ is embedded in the document if run with `-q`).
 * [solemn_declaration-signed.pdf](solemn_declaration-signed.pdf): an example
   PDF solemn declaration signed, with an embedded QR reference code.
 
-## Configure
+## Form Data
 
 The contents of the form are read from `data.json`. See the provided
 example.
+
+## Configuration
+
+The program selects the fonts given in a setup file, either specified by the 
+user, or [`setup.json`](setup.json) if not. This file contains the regular and 
+bold font. The program will try to find them and register them for use. 
 
 ## Requirements
 

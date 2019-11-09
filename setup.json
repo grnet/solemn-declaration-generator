@@ -1,0 +1,12 @@
+{
+    "font-regular" : [
+        "/usr/share/fonts/truetype/roboto/hinted/Roboto-Regular.ttf", 
+        "/Library/Fonts/Roboto-Regular.ttf",
+        "/System/Library/Fonts/Supplemental/Arial.ttf"
+    ],
+    "font-bold" : [
+        "/usr/share/fonts/truetype/roboto/hinted/Roboto-Bold.ttf",
+        "/Library/Fonts/Roboto-Bold.ttf",
+        "/System/Library/Fonts/Supplemental/Arial Bold.ttf"
+    ]
+}
