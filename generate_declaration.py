@@ -104,6 +104,12 @@ STYLES.add(ParagraphStyle(name='DeclHeading',
                           alignment=TA_CENTER,
                           spaceAfter=5))
 
+STYLES.add(ParagraphStyle(name='DeclSubHeading',
+                          fontName='Roboto-Bold',
+                          fontSize=9,
+                          alignment=TA_CENTER,
+                          spaceAfter=5))
+
 STYLES.add(ParagraphStyle(name='NameSignature',
                           fontName='Roboto-Regular',
                           fontSize=10,
@@ -494,6 +500,11 @@ def make_heading(element, contents):
         elements.append(Paragraph(pcontent, STYLES["DeclHeading"]))
 
 
+def make_subheading(element, contents):
+    for pcontent in contents:
+        elements.append(Paragraph(pcontent, STYLES["DeclSubHeading"]))
+
+
 def make_intro(elements, contents):
     elements.append(Spacer(1, 12))
     elements.append(Paragraph(contents, STYLES["Warning"]))
@@ -585,7 +596,7 @@ if __name__ == "__main__":
         payload['gender'] = 'mf'
 
     make_heading(elements, [TITLE])
-    make_heading(elements, [LAW])
+    make_subheading(elements, [LAW])
     elements.append(Spacer(1, 12))
     make_intro(elements, WARNING)
     make_human_signature(elements, payload)
