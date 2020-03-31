@@ -1,0 +1,48 @@
+{
+  "district" : "Attikis",
+  "municipality" : "Athinwn",
+  "registry_office" : "Athinas",
+  "street" : "Mpouziki 49",
+  "telephone" : "6998852050",
+
+
+  "insurance_attr" : "All inclusive",
+  "birth_cert_info" : "Unknown",
+  "decl_date" : "2-3-4010",
+
+  "newborn_surname" : "loukyluke",
+  "newborn_name" : "milo",
+  "newborn_gender" : "trooper",
+  "newborn_date" : "2-2-2222",
+  "newborn_amka" : "535203920",
+  "newborn_birth_place" : "11324",
+
+
+  "mother_surname" : "Ms Storm Trooper",
+  "mother_name" : "Snow White",
+  "mother_nationality" : "lol",
+  "mother_birth_place":"kdnsdnf",
+  "mother_foreign_city":"Gdansk",
+  "mother_municipality_logs":"orkfrokfr",
+  "mother_number_m_logs":"44",
+  "mother_afm":"424234234234",
+  "mother_amka":"234234324",
+  "mother_insurance":{"1":"insurance 1",
+                      "2":"insurance 2"},
+  "mother_father_surname": "Kwstakis",
+
+  "father_surname" : "Mr Vader",
+  "father_name" : "Snow Black",
+  "father_nationality": "lel",
+  "father_birth_place":"kdnsdnf",
+  "father_foreign_city":"Gdansk",
+  "father_municipality_logs":"orkfrokfr",
+  "father_number_m_logs":"44",
+  "father_afm":"424234234234",
+  "father_amka":"234234324",
+  "father_insurance":{"1":"insurance 1",
+                      "2":"insurance 2",
+                      "3":"insurance 3"},
+
+  "notes":"ifjiofjoifjeofijfoiejfeoifjeofijefoiejfoeijfeoifje"
+}
