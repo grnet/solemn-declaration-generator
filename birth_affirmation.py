@@ -360,49 +360,104 @@ def make_first_page(canvas, doc, qr, payload):
               10 * cm, PAGE_HEIGHT - 19.1 * cm, 5 * cm, 1 * cm,
               font_name='Font-Regular', font_size=9)
 
-    draw_para(canvas, 'Πόλη γέννησης<super>2</super>',
+    draw_para(canvas, 'Πόλη γέννησης',
               3.2 * cm, PAGE_HEIGHT - 19.6 * cm, 4 * cm, 1 * cm,
               font_name='Font-Bold-Italic', font_size=9)
 
-    draw_para(canvas, payload['birthregion'],
-              10 * cm, PAGE_HEIGHT - 19.6 * cm, 5 * cm, 1 * cm,
-              font_name='Font-Regular', font_size=9)
+    if payload['birthcountry'] != 'Ελλάδα':
+        draw_para(canvas, payload['birthregion'],
+                  10 * cm, PAGE_HEIGHT - 19.6 * cm, 5 * cm, 1 * cm,
+                  font_name='Font-Regular', font_size=9)
 
     draw_para(canvas, 'Νομός γέννησης',
+              3.2 * cm, PAGE_HEIGHT - 20.1 * cm, 4 * cm, 1 * cm,
+              font_name='Font-Bold-Italic', font_size=9)
+
+    draw_para(canvas, payload['birthregion'],
+              10 * cm, PAGE_HEIGHT - 20.1 * cm, 5 * cm, 1 * cm,
+              font_name='Font-Regular', font_size=9)
+
+    draw_para(canvas, 'Χώρα γέννησης',
               3.2 * cm, PAGE_HEIGHT - 20.6 * cm, 4 * cm, 1 * cm,
               font_name='Font-Bold-Italic', font_size=9)
 
-    draw_para(canvas, 'Χώρα γέννησης',
+    draw_para(canvas, payload['birthcountry'],
+              10 * cm, PAGE_HEIGHT - 20.6 * cm, 5 * cm, 1 * cm,
+              font_name='Font-Regular', font_size=9)
+
+    draw_para(canvas, 'Ιθαγένεια',
               3.2 * cm, PAGE_HEIGHT - 21.1 * cm, 4 * cm, 1 * cm,
               font_name='Font-Bold-Italic', font_size=9)
 
-    draw_para(canvas, 'Ιθαγένεια',
+    draw_para(canvas, payload['mainnationality'],
+              10 * cm, PAGE_HEIGHT - 21.1 * cm, 5 * cm, 1 * cm,
+              font_name='Font-Regular', font_size=9)
+
+    draw_para(canvas, 'Ημ/νία Κτήσης Ιθαγένειας<super>3</super>',
               3.2 * cm, PAGE_HEIGHT - 21.6 * cm, 4 * cm, 1 * cm,
               font_name='Font-Bold-Italic', font_size=9)
 
-    draw_para(canvas, 'Ημ/νία Κτήσης Ιθαγένειας<super>3</super>',
-              3.2 * cm, PAGE_HEIGHT - 22.1 * cm, 4 * cm, 1 * cm,
+    draw_para(canvas, payload['grnatgaindate'],
+              10 * cm, PAGE_HEIGHT - 21.6 * cm, 5 * cm, 1 * cm,
+              font_name='Font-Regular', font_size=9)
+
+    draw_para(canvas, 'Ημ/νία Κτήσης Δημοτικότητας',
+              3.2 * cm, PAGE_HEIGHT - 22.1 * cm, 5 * cm, 1 * cm,
               font_name='Font-Bold-Italic', font_size=9)
 
-    draw_para(canvas, 'Ημ/νία Κτήσης Δημοτικότητας<super>4</super>',
-              3.2 * cm, PAGE_HEIGHT - 22.6 * cm, 5 * cm, 1 * cm,
-              font_name='Font-Bold-Italic', font_size=9)
+    draw_para(canvas, payload['gainmunrecdate'],
+              10 * cm, PAGE_HEIGHT - 22.1 * cm, 5 * cm, 1 * cm,
+              font_name='Font-Regular', font_size=9)
 
     draw_para(canvas, 'ΑΜΚΑ',
-              3.2 * cm, PAGE_HEIGHT - 23.1 * cm, 1 * cm, 1 * cm,
+              3.2 * cm, PAGE_HEIGHT - 22.6 * cm, 1 * cm, 1 * cm,
               font_name='Font-Bold-Italic', font_size=9)
 
-    draw_para(canvas, 'Μητρώο Αρρένων<super>5</super>',
+    draw_para(canvas, 'Μητρώο Αρρένων',
+              3.2 * cm, PAGE_HEIGHT - 23.1 * cm, 3 * cm, 1 * cm,
+              font_name='Font-Bold-Italic', font_size=9)
+
+    if payload['gender'] == 'Άρρεν':
+        if payload['mansdecentraladmin'] is not None:
+            draw_para(canvas, payload['mansdecentraladmin'],
+                      10 * cm, PAGE_HEIGHT - 23.1 * cm, 3 * cm, 1 * cm,
+                      font_name='Font-Regular', font_size=9)
+        if payload['mansmunicipalityname'] is not None:
+            draw_para(canvas, payload['mansmunicipalityname'],
+                      13 * cm, PAGE_HEIGHT - 23.1 * cm, 3 * cm, 1 * cm,
+                      font_name='Font-Regular', font_size=9)
+        if payload['mansmunicipalunitname'] is not None:
+            draw_para(canvas, payload['mansmunicipalunitname'],
+                      16 * cm, PAGE_HEIGHT - 23.1 * cm, 3 * cm, 1 * cm,
+                      font_name='Font-Regular', font_size=9)
+        if payload['mansmuniccommname'] is not None:
+            draw_para(canvas, payload['mansmuniccommname'],
+                      19 * cm, PAGE_HEIGHT - 23.1 * cm, 3 * cm, 1 * cm,
+                      font_name='Font-Regular', font_size=9)
+
+    draw_para(canvas, 'Αριθμός - Έτος Μ.Α',
               3.2 * cm, PAGE_HEIGHT - 23.6 * cm, 3 * cm, 1 * cm,
               font_name='Font-Bold-Italic', font_size=9)
 
-    draw_para(canvas, 'Αριθμός - Έτος Μ.Α',
+    if payload['gender'] == 'Άρρεν':
+        if payload['mansdecentraladmin'] is not None:
+            draw_para(canvas, payload['mansrecordaa'],
+                      10 * cm, PAGE_HEIGHT - 23.6 * cm, 3 * cm, 1 * cm,
+                      font_name='Font-Regular', font_size=9)
+        if payload['mansdecentraladmin'] is not None:
+            draw_para(canvas, payload['mansrecordyear'],
+                      10 * cm, PAGE_HEIGHT - 23.6 * cm, 3 * cm, 1 * cm,
+                      font_name='Font-Regular', font_size=9)
+
+    draw_para(canvas, 'Εγγραφή Μ.Α',
               3.2 * cm, PAGE_HEIGHT - 24.1 * cm, 3 * cm, 1 * cm,
               font_name='Font-Bold-Italic', font_size=9)
 
-    draw_para(canvas, 'Εγγραφή Μ.Α',
-              3.2 * cm, PAGE_HEIGHT - 24.6 * cm, 3 * cm, 1 * cm,
-              font_name='Font-Bold-Italic', font_size=9)
+    if payload['gender'] == 'Άρρεν':
+        if payload['mansreckind'] is not None:
+            draw_para(canvas, payload['mansrecordaa'],
+                      10 * cm, PAGE_HEIGHT - 24.1 * cm, 3 * cm, 1 * cm,
+                      font_name='Font-Regular', font_size=9)
 
     draw_para(canvas, 'Ο/Η Προϊστάμενος του Τμήματος Αστικής & Δημοτικής Κατάστασης',
               14 * cm, PAGE_HEIGHT - 27.5 * cm, 4 * cm, 1 * cm,
