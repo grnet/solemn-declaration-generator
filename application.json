@@ -1,0 +1,18 @@
+{
+  "firstname": "Kitsos",
+  "surname":"Menekses",
+  "gender":"m",
+  "date":"2020-20-02",
+  "afm": "1212121212",
+  "adt":"AK 00129",
+  "amka":"232323232",
+  "iban": "432984230483209328",
+  "tel":"212910291",
+  "email": "menekses@mail.com",
+  "child_firstname":"Kwstakis",
+  "child_surname":"Meneksakos",
+  "child_fathername":"Kitsos Menekses",
+  "child_mothername":"Kikitsa Menekse",
+  "title":"Αίτηση χορήγησης διατροφής",
+  "application_text": "Αιτούμαι τη χορήγηση σχολικού επιδόματος για τον γιο μου Kwstakis Menekses."
+}
